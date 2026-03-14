@@ -72,46 +72,48 @@ def _handle_meals(handler, params):
 
     sort_dir = "ASC" if order == "asc" else ("DESC" if order == "desc" else "ASC")
 
-    # 쿼리 빌더
-    fast_clauses, slow_clauses, query_params = [], [], []
-    idx = 1
+    # 쿼리 빌더 — fast/slow 파라미터를 분리하여 CTE 순서 일치
+    fast_clauses, slow_clauses = [], []
+    fast_params, slow_params = [], []
 
     if school_code:
-        fast_clauses.append(f"school_code = %s")
-        query_params.append(school_code)
+        fast_clauses.append("school_code = %s")
+        fast_params.append(school_code)
     elif school:
-        slow_clauses.append(f"school_name ILIKE %s")
-        query_params.append(f"%{school}%")
+        slow_clauses.append("school_name ILIKE %s")
+        slow_params.append(f"%{school}%")
 
     if dish:
         normalized = _build_search_key(dish)
-        slow_clauses.append(f"search_key LIKE %s")
-        query_params.append(f"%{normalized}%")
+        slow_clauses.append("search_key LIKE %s")
+        slow_params.append(f"%{normalized}%")
 
     if month:
-        fast_clauses.append(f"meal_month = %s")
-        query_params.append(month)
+        fast_clauses.append("meal_month = %s")
+        fast_params.append(month)
 
     if years:
         placeholders = ", ".join(["%s"] * len(years))
         fast_clauses.append(f"meal_year IN ({placeholders})")
-        query_params.extend(years)
+        fast_params.extend(years)
 
     order_sql = f"ORDER BY {sort} {sort_dir}, id ASC"
     offset = (page - 1) * PAGE_SIZE
 
-    # CTE 최적화
+    # CTE 최적화: fast params → slow params 순서로 결합
     if fast_clauses and slow_clauses:
         fast_where = "WHERE " + " AND ".join(fast_clauses)
         slow_where = "WHERE " + " AND ".join(slow_clauses)
         cte = f"WITH base AS MATERIALIZED (SELECT * FROM meals {fast_where})"
         count_sql = f"{cte} SELECT COUNT(*) FROM base {slow_where}"
         data_sql = f"{cte} SELECT {SELECT_COLS} FROM base {slow_where} {order_sql} LIMIT {PAGE_SIZE} OFFSET {offset}"
+        query_params = fast_params + slow_params
     else:
         all_clauses = fast_clauses + slow_clauses
         where_sql = ("WHERE " + " AND ".join(all_clauses)) if all_clauses else ""
         count_sql = f"SELECT COUNT(*) FROM meals {where_sql}"
         data_sql = f"SELECT {SELECT_COLS} FROM meals {where_sql} {order_sql} LIMIT {PAGE_SIZE} OFFSET {offset}"
+        query_params = fast_params + slow_params
 
     conn = _get_conn()
     try:
