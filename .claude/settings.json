@@ -49,7 +49,24 @@
       "Bash(echo \"  echo ''YOUR_TOKEN'' | gh auth login --with-token\")",
       "Bash(git init:*)",
       "Bash(git branch:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(gh repo:*)",
+      "Bash(vercel whoami:*)",
+      "Bash(vercel --yes --prod --name bab --build-env VITE_API_BASE_URL=http://localhost:8007)",
+      "Bash(vercel link:*)",
+      "Bash(vercel --yes --prod)",
+      "Bash(curl -s \"https://20260314bab.vercel.app/api/health\")",
+      "Bash(curl -s \"https://20260314bab.vercel.app/api/meals?school_code=7010057&month=3&years=2025\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(f''''total={d[\"\"total\"\"]}, first={d[\"\"data\"\"][0][\"\"school_name\"\"] if d[\"\"data\"\"] else \"\"none\"\"}''''\\)\")",
+      "Bash(vercel alias:*)",
+      "Bash(git push:*)",
+      "Read(//Users/jameskim_mini/trybab/20260314_bab/**)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(f''''total={d[\"\"total\"\"]}''''\\)\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(f''''total={d.get\\(\"\"total\"\",\"\"?\"\"\\)} first={d.get\\(\"\"data\"\",[{}]\\)[0].get\\(\"\"school_name\"\",\"\"?\"\"\\) if d.get\\(\"\"data\"\"\\) else \"\"none\"\"}''''\\)\")"
+    ],
+    "additionalDirectories": [
+      "/dev"
     ]
   }
 }
