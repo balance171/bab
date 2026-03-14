@@ -69,9 +69,12 @@ function toggleYear(y: number) {
 
 function handleSubmit() {
   if (isDisabled.value) return
+  const schoolText = school.value.trim()
+  // 학교명 필드가 비어있으면 school_code도 무시
+  const code = schoolText ? schoolCode.value : undefined
   emit('search', {
-    school: schoolCode.value ? undefined : school.value.trim() || undefined,
-    school_code: schoolCode.value,
+    school: code ? schoolText : (schoolText || undefined),
+    school_code: code,
     dish: dish.value.trim() || undefined,
     month: month.value || undefined,
     years: years.value.length ? [...years.value] : undefined,
@@ -95,7 +98,7 @@ defineExpose({ fill })
       <div class="field" style="position: relative">
         <label class="field-label" for="school-input">
           학교명
-          <span v-if="schoolCode" class="code-badge">선택됨</span>
+          <span v-if="schoolCode && school.trim()" class="code-badge">선택됨</span>
         </label>
         <input
           id="school-input"
