@@ -174,12 +174,13 @@ function handleRecentSelect(entry: RecentSearchEntry) {
   white-space: nowrap;
 }
 
-/* ─── 테이블 영역: 남은 높이 전부 사용, 내부 스크롤 ─── */
+/* ─── 테이블 영역: 남은 높이 전부, 가로+세로 스크롤 ─── */
 .table-area {
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 0 var(--sp-5);
+  -webkit-overflow-scrolling: touch;
+  padding: 0 var(--sp-5) var(--sp-4);
 }
 
 /* ─── 모바일 ─── */

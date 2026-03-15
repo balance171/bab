@@ -133,7 +133,7 @@ function cellVal(v: string | null): string {
     </div>
 
     <!-- Data table -->
-    <div v-else class="table-wrap">
+    <template v-else>
       <table class="data-table">
         <thead>
           <tr>
@@ -205,7 +205,7 @@ function cellVal(v: string | null): string {
           </tr>
         </tbody>
       </table>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -214,7 +214,6 @@ function cellVal(v: string | null): string {
   background: var(--surface);
   border-radius: var(--r-xl);
   box-shadow: var(--shadow-md);
-  overflow: hidden;
   min-height: 200px;
 }
 
@@ -302,11 +301,6 @@ function cellVal(v: string | null): string {
 }
 
 /* Table */
-.table-wrap {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
 .data-table {
   width: 100%;
   min-width: 1100px;
