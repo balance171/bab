@@ -100,13 +100,25 @@ function toggleYear(y: number) {
   }
 }
 
-function handleSubmit() {
+async function handleSubmit() {
   if (isDisabled.value) return
   const schoolText = school.value.trim()
-  // 학교명 필드가 비어있으면 school_code도 무시
-  const code = schoolText ? schoolCode.value : undefined
+  let code = schoolText ? schoolCode.value : undefined
+
+  // school_code가 없고 학교명 텍스트가 있으면 → API에서 자동 매칭
+  if (schoolText && !code) {
+    const matched = await fetchSchools(schoolText)
+    if (matched.length > 0) {
+      // 첫 번째 매칭 학교 자동 선택
+      const best = matched[0]!
+      school.value = best.school_name
+      schoolCode.value = best.school_code
+      code = best.school_code
+    }
+  }
+
   emit('search', {
-    school: code ? schoolText : (schoolText || undefined),
+    school: code ? school.value.trim() : (schoolText || undefined),
     school_code: code,
     dish: dish.value.trim() || undefined,
     month: months.value.length === 1 ? months.value[0] : undefined,
