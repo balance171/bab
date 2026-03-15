@@ -51,6 +51,28 @@ function closeSuggestions() {
   }, 150)
 }
 
+// ── 즐겨찾기 학교 ─────────────────────────────────────────────
+const PRESET_SCHOOLS: SchoolItem[] = [
+  { school_name: '서울대학교사범대학부설고등학교', school_code: '7011109', region: '서울' },
+  { school_name: '수원정보과학고등학교', school_code: '7530899', region: '경기' },
+  { school_name: '광교고등학교', school_code: '7531040', region: '경기' },
+  { school_name: '수지고등학교', school_code: '7530093', region: '경기' },
+]
+
+function onPresetChange(e: Event) {
+  const code = (e.target as HTMLSelectElement).value
+  if (!code) {
+    school.value = ''
+    schoolCode.value = undefined
+    return
+  }
+  const found = PRESET_SCHOOLS.find((s) => s.school_code === code)
+  if (found) {
+    school.value = found.school_name
+    schoolCode.value = found.school_code
+  }
+}
+
 // ── 연도 ──────────────────────────────────────────────────────
 const YEAR_OPTIONS = [2023, 2024, 2025, 2026]
 
@@ -100,17 +122,31 @@ defineExpose({ fill })
           학교명
           <span v-if="schoolCode && school.trim()" class="code-badge">선택됨</span>
         </label>
-        <input
-          id="school-input"
-          v-model="school"
-          type="text"
-          class="field-input"
-          :class="{ 'input-selected': schoolCode }"
-          placeholder="예) 가락고등학교"
-          autocomplete="off"
-          @input="onSchoolInput"
-          @blur="closeSuggestions"
-        />
+        <div class="school-input-group">
+          <select
+            class="field-input field-select school-preset"
+            :value="schoolCode ?? ''"
+            @change="onPresetChange"
+          >
+            <option value="">직접 입력</option>
+            <option
+              v-for="ps in PRESET_SCHOOLS"
+              :key="ps.school_code"
+              :value="ps.school_code"
+            >{{ ps.school_name }}</option>
+          </select>
+          <input
+            id="school-input"
+            v-model="school"
+            type="text"
+            class="field-input school-text"
+            :class="{ 'input-selected': schoolCode }"
+            placeholder="또는 학교명 검색"
+            autocomplete="off"
+            @input="onSchoolInput"
+            @blur="closeSuggestions"
+          />
+        </div>
         <ul v-if="showSuggestions" class="suggestions" role="listbox">
           <li
             v-for="item in suggestions"
@@ -319,6 +355,24 @@ defineExpose({ fill })
   border-color: var(--primary);
   color: var(--primary);
   font-weight: 600;
+}
+
+/* ── 학교 입력 그룹 ── */
+.school-input-group {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.school-preset {
+  flex: 0 0 auto;
+  width: 140px;
+  font-size: var(--text-xs);
+  padding-right: 28px;
+}
+
+.school-text {
+  flex: 1;
+  min-width: 0;
 }
 
 /* ── 자동완성 ── */
