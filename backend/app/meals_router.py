@@ -16,7 +16,8 @@ from app.normalize import build_search_key
 logger = structlog.get_logger(__name__)
 router = APIRouter(prefix="/api", tags=["meals"])
 
-PAGE_SIZE = 50
+DEFAULT_PAGE_SIZE = 30
+MAX_PAGE_SIZE = 200
 
 # ── 정렬 허용 컬럼 화이트리스트 ──────────────────────────────
 SORTABLE = {
@@ -63,6 +64,7 @@ def _build_query(
     sort_col: str,
     sort_dir: str,
     page: int,
+    page_size: int,
 ) -> tuple[str, str, list]:
     """
     (count_sql, data_sql, params) 반환.
@@ -105,7 +107,7 @@ def _build_query(
         idx += len(years)
 
     order_sql = f"ORDER BY {sort_col} {sort_dir}, id ASC"
-    offset = (page - 1) * PAGE_SIZE
+    offset = (page - 1) * page_size
 
     # CTE 최적화: btree 조건이 있고 + 텍스트 조건도 있으면 CTE로 분리
     if fast_clauses and slow_clauses:
@@ -116,7 +118,7 @@ def _build_query(
         data_sql = (
             f"{cte} SELECT {_SELECT_COLS} "
             f"FROM base {slow_where} {order_sql} "
-            f"LIMIT {PAGE_SIZE} OFFSET {offset}"
+            f"LIMIT {page_size} OFFSET {offset}"
         )
     else:
         all_clauses = fast_clauses + slow_clauses
@@ -125,7 +127,7 @@ def _build_query(
         data_sql = (
             f"SELECT {_SELECT_COLS} "
             f"FROM meals {where_sql} {order_sql} "
-            f"LIMIT {PAGE_SIZE} OFFSET {offset}"
+            f"LIMIT {page_size} OFFSET {offset}"
         )
 
     return count_sql, data_sql, params
@@ -142,6 +144,7 @@ async def search_meals(
     sort: str = Query("meal_date", description="정렬 컬럼"),
     order: Literal["asc", "desc", "default"] = Query("default", description="정렬 방향"),
     page: int = Query(1, ge=1, description="페이지 번호"),
+    page_size: int = Query(DEFAULT_PAGE_SIZE, ge=1, le=MAX_PAGE_SIZE, description="페이지 크기"),
 ):
     request_id = uuid.uuid4().hex[:8]
     t0 = time.monotonic()
@@ -179,7 +182,7 @@ async def search_meals(
 
     try:
         count_sql, data_sql, params = _build_query(
-            school, school_code, dish, month, years, sort, sort_dir, page
+            school, school_code, dish, month, years, sort, sort_dir, page, page_size
         )
         pool = get_pool()
         async with pool.acquire() as conn:
@@ -223,4 +226,4 @@ async def search_meals(
         )
         for r in rows
     ]
-    return MealsResponse(total=total, page=page, page_size=PAGE_SIZE, data=data)
+    return MealsResponse(total=total, page=page, page_size=page_size, data=data)

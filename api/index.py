@@ -11,7 +11,8 @@ from urllib.parse import urlparse, parse_qs
 import psycopg2
 import psycopg2.extras
 
-PAGE_SIZE = 50
+DEFAULT_PAGE_SIZE = 30
+MAX_PAGE_SIZE = 200
 
 SORTABLE = {
     "meal_date", "meal_year", "school_name", "region",
@@ -28,9 +29,9 @@ def _build_search_key(text):
     text = text.lower()
     text = re.sub(r"\(.*?\)", "", text)
     text = re.sub(r"[\s\u00a0\t]", "", text)
-    text = re.sub(r"[a-z*☆△★]+(?=,|$)", "", text)
-    text = re.sub(r"(?<=,)[*☆△★]+", "", text)
-    text = re.sub(r"^[*☆△★]+", "", text)
+    text = re.sub(r"[a-z0-9.*#☆△★]+(?=,|$)", "", text)
+    text = re.sub(r"(?<=,)[*#☆△★]+", "", text)
+    text = re.sub(r"^[*#☆△★]+", "", text)
     return text
 
 
@@ -63,6 +64,8 @@ def _handle_meals(handler, params):
     order = params.get("order", ["default"])[0]
     page_str = params.get("page", ["1"])[0]
     page = max(1, int(page_str))
+    ps_str = params.get("page_size", [str(DEFAULT_PAGE_SIZE)])[0]
+    page_size = min(MAX_PAGE_SIZE, max(1, int(ps_str)))
 
     if not school and not school_code and not dish and month is None:
         return _json_response(handler, {"detail": "학교명, 요리명, 월 중 하나 이상 입력해야 합니다."}, 400)
@@ -98,7 +101,7 @@ def _handle_meals(handler, params):
         fast_params.extend(years)
 
     order_sql = f"ORDER BY {sort} {sort_dir}, id ASC"
-    offset = (page - 1) * PAGE_SIZE
+    offset = (page - 1) * page_size
 
     # CTE 최적화: fast params → slow params 순서로 결합
     if fast_clauses and slow_clauses:
@@ -106,13 +109,13 @@ def _handle_meals(handler, params):
         slow_where = "WHERE " + " AND ".join(slow_clauses)
         cte = f"WITH base AS MATERIALIZED (SELECT * FROM meals {fast_where})"
         count_sql = f"{cte} SELECT COUNT(*) FROM base {slow_where}"
-        data_sql = f"{cte} SELECT {SELECT_COLS} FROM base {slow_where} {order_sql} LIMIT {PAGE_SIZE} OFFSET {offset}"
+        data_sql = f"{cte} SELECT {SELECT_COLS} FROM base {slow_where} {order_sql} LIMIT {page_size} OFFSET {offset}"
         query_params = fast_params + slow_params
     else:
         all_clauses = fast_clauses + slow_clauses
         where_sql = ("WHERE " + " AND ".join(all_clauses)) if all_clauses else ""
         count_sql = f"SELECT COUNT(*) FROM meals {where_sql}"
-        data_sql = f"SELECT {SELECT_COLS} FROM meals {where_sql} {order_sql} LIMIT {PAGE_SIZE} OFFSET {offset}"
+        data_sql = f"SELECT {SELECT_COLS} FROM meals {where_sql} {order_sql} LIMIT {page_size} OFFSET {offset}"
         query_params = fast_params + slow_params
 
     conn = _get_conn()
@@ -144,7 +147,7 @@ def _handle_meals(handler, params):
     return _json_response(handler, {
         "total": total,
         "page": page,
-        "page_size": PAGE_SIZE,
+        "page_size": page_size,
         "data": data,
     })
 

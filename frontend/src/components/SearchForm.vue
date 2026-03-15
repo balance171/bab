@@ -78,7 +78,7 @@ const YEAR_OPTIONS = [2023, 2024, 2025, 2026]
 
 const isDisabled = computed(() => !school.value.trim() && !dish.value.trim() && !month.value)
 
-const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+const months = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2]
 
 function toggleYear(y: number) {
   const idx = years.value.indexOf(y)

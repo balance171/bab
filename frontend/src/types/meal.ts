@@ -28,6 +28,7 @@ export interface SearchParams {
   sort?: string
   order?: 'asc' | 'desc' | 'default'
   page?: number
+  page_size?: number
 }
 
 export interface SchoolItem {

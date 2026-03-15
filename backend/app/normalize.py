@@ -16,9 +16,9 @@ def build_search_key(menu_full: str) -> str:
     text = menu_full.lower()
     text = re.sub(r"\(.*?\)", "", text)           # 괄호 내부 제거
     text = re.sub(r"[\s\u00a0\t]", "", text)      # 공백/NBSP/탭
-    text = re.sub(r"[a-z0-9.*☆△★]+(?=,|$)", "", text)  # 각 항목 끝 마커 제거
-    text = re.sub(r"(?<=,)[*☆△★]+", "", text)         # 각 항목 앞 마커 제거 (쉼표 뒤)
-    text = re.sub(r"^[*☆△★]+", "", text)               # 첫 항목 앞 마커 제거
+    text = re.sub(r"[a-z0-9.*#☆△★]+(?=,|$)", "", text)  # 각 항목 끝 마커 제거
+    text = re.sub(r"(?<=,)[*#☆△★]+", "", text)         # 각 항목 앞 마커 제거 (쉼표 뒤)
+    text = re.sub(r"^[*#☆△★]+", "", text)               # 첫 항목 앞 마커 제거
     return text
 
 
@@ -71,10 +71,10 @@ def _clean_item(item: str) -> str:
         s = s[:idx]
     # 중간 정리: 공백 제거 후 마커 제거 (공백이 남으면 regex가 못 잡음)
     s = s.strip()
-    # 3단계: 끝 마커 제거 (영문, *, ☆, △, ★, 숫자, 마침표)
-    s = re.sub(r"[a-zA-Z0-9.*☆△★]+$", "", s)
-    # 4단계: 앞 마커 제거 (*바지락살미역국 → 바지락살미역국)
-    s = re.sub(r"^[*☆△★]+", "", s)
+    # 3단계: 끝 마커 제거 (영문, *, #, ☆, △, ★, 숫자, 마침표)
+    s = re.sub(r"[a-zA-Z0-9.*#☆△★]+$", "", s)
+    # 4단계: 앞 마커 제거
+    s = re.sub(r"^[*#☆△★]+", "", s)
     return s.strip()
 
 

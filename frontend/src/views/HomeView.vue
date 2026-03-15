@@ -14,16 +14,19 @@ const results = ref<MealsResponse | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
 const currentParams = ref<SearchParams>({})
+const pageSize = ref(30)
+
+const PAGE_SIZE_OPTIONS = [30, 50, 100, 200]
 
 const { entries: recentEntries, push: pushRecent, clear: clearRecent } = useRecentSearch()
 
 async function doSearch(params: SearchParams) {
   loading.value = true
   error.value = null
-  results.value = null  // 이전 결과 초기화 (skeleton + 이전 pagination 동시 표시 방지)
+  results.value = null
   currentParams.value = params
   try {
-    results.value = await fetchMeals(params)
+    results.value = await fetchMeals({ ...params, page_size: pageSize.value })
   } catch (e) {
     error.value = e instanceof Error ? e.message : '알 수 없는 오류가 발생했어요'
     results.value = null
@@ -43,8 +46,14 @@ function handleSort(sort: string | undefined, order: 'asc' | 'desc' | 'default')
 
 function handlePageChange(page: number) {
   doSearch({ ...currentParams.value, page })
-  // Scroll to top of right panel on mobile
   window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+function handlePageSizeChange(e: Event) {
+  pageSize.value = Number((e.target as HTMLSelectElement).value)
+  if (results.value) {
+    doSearch({ ...currentParams.value, page: 1 })
+  }
 }
 
 function handleRecentSelect(entry: RecentSearchEntry) {
@@ -63,25 +72,28 @@ function handleRecentSelect(entry: RecentSearchEntry) {
     years: entry.years?.length ? entry.years : undefined,
   })
 }
-
 </script>
 
 <template>
   <div class="app-layout">
-    <!-- Main content -->
     <main class="main">
-      <!-- Search bar -->
-      <SearchForm ref="searchFormRef" @search="handleSearch" />
-
-      <!-- Recent searches (horizontal chips) + result count -->
-      <div class="sub-bar">
-        <RecentSearch
-          :entries="recentEntries"
-          @select="handleRecentSelect"
-          @clear="clearRecent"
-        />
-        <div v-if="results" class="result-badge" aria-live="polite">
-          {{ results.total.toLocaleString() }}건
+      <!-- Sticky top: search + recent -->
+      <div class="sticky-top">
+        <SearchForm ref="searchFormRef" @search="handleSearch" />
+        <div class="sub-bar">
+          <RecentSearch
+            :entries="recentEntries"
+            @select="handleRecentSelect"
+            @clear="clearRecent"
+          />
+          <div class="sub-bar-right">
+            <select class="size-select" :value="pageSize" @change="handlePageSizeChange">
+              <option v-for="s in PAGE_SIZE_OPTIONS" :key="s" :value="s">{{ s }}개</option>
+            </select>
+            <div v-if="results" class="result-badge" aria-live="polite">
+              {{ results.total.toLocaleString() }}건
+            </div>
+          </div>
         </div>
       </div>
 
@@ -110,11 +122,9 @@ function handleRecentSelect(entry: RecentSearchEntry) {
   min-height: 100vh;
 }
 
-/* ─── Main ─── */
 .main {
-  flex: 1;
   min-width: 0;
-  padding: var(--sp-5) var(--sp-6) var(--sp-10);
+  padding: 0 var(--sp-6) var(--sp-10);
   background: radial-gradient(
       ellipse at 90% 0%,
       rgba(180, 165, 255, 0.22) 0%,
@@ -122,17 +132,58 @@ function handleRecentSelect(entry: RecentSearchEntry) {
       transparent 65%
     ),
     var(--bg);
-  overflow-y: auto;
 }
 
-/* ─── Sub bar (recent chips + result badge) ─── */
+/* ─── Sticky top ─── */
+.sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg);
+  padding-top: var(--sp-4);
+  padding-bottom: var(--sp-2);
+  /* 배경 그라데이션 연결 */
+  background: radial-gradient(
+      ellipse at 90% 0%,
+      rgba(180, 165, 255, 0.22) 0%,
+      rgba(200, 220, 255, 0.12) 40%,
+      transparent 65%
+    ),
+    var(--bg);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition);
+}
+
+/* ─── Sub bar ─── */
 .sub-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--sp-3);
-  margin: var(--sp-3) 0 var(--sp-4);
+  margin-top: var(--sp-3);
   min-height: 28px;
+}
+
+.sub-bar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-shrink: 0;
+}
+
+.size-select {
+  appearance: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 4px var(--sp-6) 4px var(--sp-3);
+  font-size: var(--text-xs);
+  font-family: var(--font);
+  color: var(--text);
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ba3b5' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
 }
 
 .result-badge {
@@ -147,15 +198,16 @@ function handleRecentSelect(entry: RecentSearchEntry) {
   white-space: nowrap;
 }
 
-/* ─── Table section (full width) ─── */
+/* ─── Table section ─── */
 .table-section {
   display: flex;
   flex-direction: column;
+  margin-top: var(--sp-3);
 }
 
 @media (max-width: 640px) {
   .main {
-    padding: var(--sp-4) var(--sp-3) var(--sp-8);
+    padding: 0 var(--sp-3) var(--sp-8);
   }
 }
 </style>

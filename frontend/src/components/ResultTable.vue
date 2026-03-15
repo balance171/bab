@@ -307,7 +307,7 @@ function cellVal(v: string | null): string {
 
 .data-table {
   width: 100%;
-  min-width: 960px;
+  min-width: 1100px;
   border-collapse: collapse;
   font-size: var(--text-sm);
   table-layout: fixed;
@@ -355,15 +355,15 @@ function cellVal(v: string | null): string {
 }
 
 /* 컬럼 너비 비율 (table-layout: fixed) */
-.th-meal_year   { width: 5%; }
-.th-meal_date   { width: 7%; }
-.th-school_name { width: 9%; }
-.th-meal_type   { width: 5%; }
+.th-meal_year   { width: 4%; }
+.th-meal_date   { width: 6%; }
+.th-school_name { width: 13%; }
+.th-meal_type   { width: 4%; }
 .th-soup        { width: 9%; }
 .th-main_dish   { width: 9%; }
 .th-side1       { width: 9%; }
 .th-dessert     { width: 9%; }
-.th-search_key  { width: 38%; }
+.th-search_key  { width: 37%; }
 
 /* Rows */
 .td {
