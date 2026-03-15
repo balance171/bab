@@ -65,7 +65,9 @@ function formatDate(d: string): string {
   const month = Number(parts[1] ?? 1)
   const day = Number(parts[2] ?? 1)
   const date = new Date(year, month - 1, day)
-  return `${month}/${day}(${KO_DAYS[date.getDay()] ?? '?'})`
+  const mm = String(month).padStart(2, '0')
+  const dd = String(day).padStart(2, '0')
+  return `${mm}/${dd}(${KO_DAYS[date.getDay()] ?? '?'})`
 }
 
 function mealTypeClass(type: string): string {
