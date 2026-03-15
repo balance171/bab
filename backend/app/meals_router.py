@@ -210,6 +210,11 @@ async def search_meals(
         duration_ms=duration_ms,
     )
 
+    def _strip(v: str | None) -> str | None:
+        if not v:
+            return v
+        return re.sub(r"[a-zA-Z0-9.*#☆△★]+$", "", v).strip() or v
+
     data = [
         MealRow(
             id=r["id"],
@@ -217,12 +222,12 @@ async def search_meals(
             school_name=r["school_name"],
             meal_date=r["meal_date"].isoformat(),
             meal_type=r["meal_type"],
-            soup=r["soup"],
-            main_dish=r["main_dish"],
-            side1=r["side1"],
-            dessert=r["dessert"],
+            soup=_strip(r["soup"]),
+            main_dish=_strip(r["main_dish"]),
+            side1=_strip(r["side1"]),
+            dessert=_strip(r["dessert"]),
             menu_full=r["menu_full"],
-            search_key=r["search_key"],
+            search_key=re.sub(r"[0-9.*#☆△★]+(?=,|$)", "", r["search_key"] or ""),
         )
         for r in rows
     ]

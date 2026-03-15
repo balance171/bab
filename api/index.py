@@ -128,6 +128,12 @@ def _handle_meals(handler, params):
     finally:
         conn.close()
 
+    def _strip(v):
+        """DB에 남아있는 끝 마커(#.*숫자 등) 실시간 제거"""
+        if not v:
+            return v
+        return re.sub(r"[a-zA-Z0-9.*#☆△★]+$", "", v).strip() or v
+
     data = []
     for r in rows:
         data.append({
@@ -136,12 +142,12 @@ def _handle_meals(handler, params):
             "school_name": r["school_name"],
             "meal_date": str(r["meal_date"]),
             "meal_type": r["meal_type"],
-            "soup": r["soup"],
-            "main_dish": r["main_dish"],
-            "side1": r["side1"],
-            "dessert": r["dessert"],
+            "soup": _strip(r["soup"]),
+            "main_dish": _strip(r["main_dish"]),
+            "side1": _strip(r["side1"]),
+            "dessert": _strip(r["dessert"]),
             "menu_full": r["menu_full"],
-            "search_key": r["search_key"],
+            "search_key": re.sub(r"[0-9.*#☆△★]+(?=,|$)", "", r["search_key"] or ""),
         })
 
     return _json_response(handler, {
