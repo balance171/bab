@@ -17,7 +17,7 @@ type SortOrder = 'asc' | 'desc' | 'default'
 const sortCol = ref<string | undefined>(undefined)
 const sortOrder = ref<SortOrder>('default')
 
-const SORTABLE = ['meal_date', 'meal_year', 'school_name']
+const SORTABLE = ['meal_year', 'meal_date', 'school_name', 'meal_type', 'soup', 'main_dish', 'side1', 'dessert', 'search_key']
 
 const COLUMNS = [
   { key: 'meal_year', label: '연도' },

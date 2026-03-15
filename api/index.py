@@ -16,7 +16,7 @@ MAX_PAGE_SIZE = 200
 
 SORTABLE = {
     "meal_date", "meal_year", "school_name", "region",
-    "meal_type", "soup", "main_dish", "side1", "dessert",
+    "meal_type", "soup", "main_dish", "side1", "dessert", "search_key",
 }
 
 SELECT_COLS = (
