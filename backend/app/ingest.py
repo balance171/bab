@@ -137,9 +137,9 @@ async def fetch_schools(
     region_code: str,
     job_id: str,
 ) -> list[dict]:
-    """schoolInfo API로 초·중·고등학교 목록 수집"""
+    """schoolInfo API로 고·중·초등학교 목록 수집 (고등학교 우선)"""
     schools: list[dict] = []
-    for school_type in ("초등학교", "중학교", "고등학교"):
+    for school_type in ("고등학교", "중학교", "초등학교"):
         page = 1
         while True:
             rows = await _neis_get(

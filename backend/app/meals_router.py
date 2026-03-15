@@ -166,7 +166,7 @@ async def search_meals(
             detail=f"정렬 불가 컬럼: {sort}. 허용: {sorted(SORTABLE)}",
         )
 
-    sort_dir = "ASC" if order == "asc" else ("DESC" if order == "desc" else "ASC")
+    sort_dir = "ASC" if order == "asc" else ("DESC" if order == "desc" else "DESC")
 
     log.info(
         "search_request",

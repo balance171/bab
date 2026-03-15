@@ -73,7 +73,7 @@ def _handle_meals(handler, params):
     if sort not in SORTABLE:
         sort = "meal_date"
 
-    sort_dir = "ASC" if order == "asc" else ("DESC" if order == "desc" else "ASC")
+    sort_dir = "ASC" if order == "asc" else ("DESC" if order == "desc" else "DESC")
 
     # 쿼리 빌더 — fast/slow 파라미터를 분리하여 CTE 순서 일치
     fast_clauses, slow_clauses = [], []
