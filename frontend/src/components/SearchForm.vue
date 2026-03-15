@@ -273,8 +273,8 @@ defineExpose({ fill })
 
 @media (max-width: 640px) {
   .form-bar {
-    gap: var(--sp-2);
-    padding: var(--sp-3);
+    gap: 4px;
+    padding: 8px;
   }
 }
 
@@ -381,64 +381,52 @@ defineExpose({ fill })
 @media (max-width: 640px) {
   .field-label {
     font-size: 10px;
-    margin-bottom: -2px;
+    line-height: 1;
   }
 
   .field {
-    gap: 2px;
-    flex: 1 1 120px;
+    gap: 1px;
+    flex: 1 1 100px;
   }
 
   .field-input {
-    padding: 6px var(--sp-2);
+    padding: 5px 6px;
     font-size: 11px;
   }
 
   .month-chip {
     padding: 2px 0;
     font-size: 9px;
-    min-width: 24px;
+    min-width: 20px;
     border-radius: 3px;
   }
 
-  .month-group {
-    gap: 2px;
-  }
-
-  .month-row {
-    gap: 2px;
-  }
+  .month-group { gap: 1px; }
+  .month-row { gap: 1px; }
+  .field-month { flex: 0 0 auto; }
 
   .year-chip {
-    padding: 4px 0;
-    font-size: 11px;
-    min-width: 44px;
-  }
-
-  .year-group {
-    gap: 3px;
-  }
-
-  .btn-search,
-  .btn-reset {
-    padding: 6px var(--sp-2);
-    font-size: 11px;
-    min-width: 56px;
-  }
-
-  .school-preset,
-  .school-text {
+    padding: 3px 0;
     font-size: 10px;
-    padding: 6px var(--sp-2);
+    min-width: 38px;
   }
 
-  .school-input-group {
-    gap: 2px;
+  .year-group { gap: 2px; }
+
+  .btn-search, .btn-reset {
+    padding: 5px 8px;
+    font-size: 10px;
+    min-width: 48px;
   }
 
-  .field-month {
-    flex: 0 0 auto;
+  .school-preset, .school-text {
+    font-size: 10px;
+    padding: 5px 6px;
   }
+
+  .school-input-group { gap: 2px; }
+  .school-preset { flex: 1 1 110px; }
+  .school-text { flex: 1 1 80px; }
 }
 
 .btn-search:hover:not(:disabled) {

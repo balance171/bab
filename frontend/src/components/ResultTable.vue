@@ -328,7 +328,7 @@ function cellVal(v: string | null): string {
   background: var(--surface-raised);
   user-select: none;
   position: sticky;
-  top: var(--sticky-top-h, 0px);
+  top: 0;
   z-index: 10;
 }
 
