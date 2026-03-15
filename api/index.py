@@ -14,7 +14,7 @@ import psycopg2.extras
 PAGE_SIZE = 50
 
 SORTABLE = {
-    "meal_date", "school_name", "region",
+    "meal_date", "meal_year", "school_name", "region",
     "meal_type", "soup", "main_dish", "side1", "dessert",
 }
 

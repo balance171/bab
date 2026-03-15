@@ -20,7 +20,7 @@ PAGE_SIZE = 50
 
 # ── 정렬 허용 컬럼 화이트리스트 ──────────────────────────────
 SORTABLE = {
-    "meal_date", "school_name", "region",
+    "meal_date", "meal_year", "school_name", "region",
     "meal_type", "soup", "main_dish", "side1", "dessert",
 }
 

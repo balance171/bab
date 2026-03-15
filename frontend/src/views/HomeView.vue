@@ -68,11 +68,6 @@ function handleRecentSelect(entry: RecentSearchEntry) {
 
 <template>
   <div class="app-layout">
-    <!-- Sidebar -->
-    <aside class="sidebar" aria-label="사이트 네비게이션">
-      <div class="brand-icon" title="급식 검색">🍱</div>
-    </aside>
-
     <!-- Main content -->
     <main class="main">
       <!-- Search bar -->
@@ -112,35 +107,7 @@ function handleRecentSelect(entry: RecentSearchEntry) {
 
 <style scoped>
 .app-layout {
-  display: flex;
   min-height: 100vh;
-}
-
-/* ─── Sidebar ─── */
-.sidebar {
-  width: 64px;
-  flex-shrink: 0;
-  background: var(--sidebar-bg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: var(--sp-6);
-  position: sticky;
-  top: 0;
-  height: 100vh;
-}
-
-.brand-icon {
-  width: 40px;
-  height: 40px;
-  background: rgba(123, 114, 247, 0.18);
-  border-radius: var(--r-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  line-height: 1;
-  cursor: default;
 }
 
 /* ─── Main ─── */
@@ -186,12 +153,7 @@ function handleRecentSelect(entry: RecentSearchEntry) {
   flex-direction: column;
 }
 
-/* Mobile: hide sidebar */
 @media (max-width: 640px) {
-  .sidebar {
-    display: none;
-  }
-
   .main {
     padding: var(--sp-4) var(--sp-3) var(--sp-8);
   }

@@ -17,9 +17,10 @@ type SortOrder = 'asc' | 'desc' | 'default'
 const sortCol = ref<string | undefined>(undefined)
 const sortOrder = ref<SortOrder>('default')
 
-const SORTABLE = ['meal_date', 'school_name']
+const SORTABLE = ['meal_date', 'meal_year', 'school_name']
 
 const COLUMNS = [
+  { key: 'meal_year', label: '연도' },
   { key: 'meal_date', label: '날짜' },
   { key: 'school_name', label: '학교' },
   { key: 'meal_type', label: '구분' },
@@ -188,6 +189,7 @@ function cellVal(v: string | null): string {
         </thead>
         <tbody>
           <tr v-for="row in meals" :key="row.id" class="data-row">
+            <td class="td td-year">{{ row.meal_date.split('-')[0] }}</td>
             <td class="td td-date">{{ formatDate(row.meal_date) }}</td>
             <td class="td td-school">{{ row.school_name }}</td>
             <td class="td td-type">
@@ -353,13 +355,14 @@ function cellVal(v: string | null): string {
 }
 
 /* 컬럼 너비 비율 (table-layout: fixed) */
+.th-meal_year   { width: 5%; }
 .th-meal_date   { width: 7%; }
-.th-school_name { width: 10%; }
+.th-school_name { width: 9%; }
 .th-meal_type   { width: 5%; }
-.th-soup        { width: 10%; }
-.th-main_dish   { width: 10%; }
-.th-side1       { width: 10%; }
-.th-dessert     { width: 10%; }
+.th-soup        { width: 9%; }
+.th-main_dish   { width: 9%; }
+.th-side1       { width: 9%; }
+.th-dessert     { width: 9%; }
 .th-search_key  { width: 38%; }
 
 /* Rows */
@@ -371,6 +374,11 @@ function cellVal(v: string | null): string {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.td-year {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
 }
 
 .td-date {
