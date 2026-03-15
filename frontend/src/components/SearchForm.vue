@@ -264,8 +264,8 @@ defineExpose({ fill })
   display: flex;
   flex-direction: column;
   gap: var(--sp-2);
-  flex: 1;
-  min-width: 140px;
+  flex: 1 1 180px;
+  min-width: 0;
 }
 
 .field-label {
@@ -331,8 +331,8 @@ defineExpose({ fill })
     box-shadow var(--transition);
   margin-top: 0;
   align-self: flex-end;
-  min-width: 100px;
-  flex-shrink: 0;
+  min-width: 90px;
+  flex: 0 0 auto;
 }
 
 .btn-search:hover:not(:disabled) {
@@ -390,7 +390,7 @@ defineExpose({ fill })
 
 /* ── 월 칩 ── */
 .field-month {
-  min-width: 200px;
+  flex: 0 0 auto;
 }
 
 .month-group {
@@ -437,18 +437,19 @@ defineExpose({ fill })
 /* ── 학교 입력 그룹 ── */
 .school-input-group {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--sp-2);
 }
 
 .school-preset {
-  flex: 0 0 auto;
-  width: 170px;
+  flex: 1 1 150px;
+  min-width: 0;
   font-size: var(--text-xs);
   padding-right: 28px;
 }
 
 .school-text {
-  flex: 1;
+  flex: 1 1 120px;
   min-width: 0;
 }
 

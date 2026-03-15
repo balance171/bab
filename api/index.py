@@ -39,7 +39,9 @@ def _get_conn():
     dsn = os.environ.get("DATABASE_URL")
     if not dsn:
         raise Exception("DATABASE_URL not configured")
-    return psycopg2.connect(dsn)
+    conn = psycopg2.connect(dsn)
+    conn.cursor().execute("SET statement_timeout = '25000'")  # 25초 (Vercel 30초 제한 내)
+    return conn
 
 
 def _json_response(handler, data, status=200):
