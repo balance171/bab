@@ -303,10 +303,15 @@ function cellVal(v: string | null): string {
 
 /* Table */
 .table-wrap {
-  overflow-x: auto;
-  overflow-y: auto;
-  max-height: 70vh;
+  overflow: auto;
+  max-height: calc(100vh - 200px);
   -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+  .table-wrap {
+    max-height: calc(100vh - 140px);
+  }
 }
 
 .data-table {

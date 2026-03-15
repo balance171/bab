@@ -207,7 +207,21 @@ function handleRecentSelect(entry: RecentSearchEntry) {
 
 @media (max-width: 640px) {
   .main {
-    padding: 0 var(--sp-3) var(--sp-8);
+    padding: 0 var(--sp-2) var(--sp-6);
+  }
+
+  .sticky-top {
+    padding-top: var(--sp-2);
+    padding-bottom: var(--sp-1);
+  }
+
+  .sub-bar {
+    margin-top: var(--sp-2);
+    gap: var(--sp-2);
+  }
+
+  .table-section {
+    margin-top: var(--sp-2);
   }
 }
 </style>

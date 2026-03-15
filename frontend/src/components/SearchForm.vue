@@ -271,6 +271,13 @@ defineExpose({ fill })
   padding: var(--sp-4) var(--sp-5);
 }
 
+@media (max-width: 640px) {
+  .form-bar {
+    gap: var(--sp-2);
+    padding: var(--sp-3);
+  }
+}
+
 .field {
   display: flex;
   flex-direction: column;
@@ -368,6 +375,39 @@ defineExpose({ fill })
   border-color: var(--error);
   color: var(--error);
   background: rgba(239, 68, 68, 0.06);
+}
+
+/* ── 모바일 최적화 ── */
+@media (max-width: 640px) {
+  .field-label {
+    font-size: 11px;
+  }
+
+  .field-input {
+    padding: 8px var(--sp-3);
+    font-size: var(--text-xs);
+  }
+
+  .month-chip {
+    padding: 3px 0;
+    font-size: 10px;
+  }
+
+  .year-chip {
+    padding: 5px 0;
+    font-size: var(--text-xs);
+  }
+
+  .btn-search,
+  .btn-reset {
+    padding: 8px var(--sp-3);
+    font-size: var(--text-xs);
+    min-width: 70px;
+  }
+
+  .school-preset {
+    font-size: 10px;
+  }
 }
 
 .btn-search:hover:not(:disabled) {
