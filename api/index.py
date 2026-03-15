@@ -73,7 +73,7 @@ def _handle_meals(handler, params):
     if sort not in SORTABLE:
         sort = "meal_date"
 
-    sort_dir = "ASC" if order == "asc" else ("DESC" if order == "desc" else "DESC")
+    sort_dir = "ASC" if order == "asc" else ("DESC" if order == "desc" else "ASC")
 
     # 쿼리 빌더 — fast/slow 파라미터를 분리하여 CTE 순서 일치
     fast_clauses, slow_clauses = [], []
@@ -100,7 +100,7 @@ def _handle_meals(handler, params):
         fast_clauses.append(f"meal_year IN ({placeholders})")
         fast_params.extend(years)
 
-    order_sql = f"ORDER BY {sort} {sort_dir}, id ASC"
+    order_sql = f"ORDER BY meal_year DESC, {sort} {sort_dir}, id ASC"
     offset = (page - 1) * page_size
 
     # CTE 최적화: fast params → slow params 순서로 결합

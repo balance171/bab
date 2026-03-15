@@ -106,7 +106,7 @@ def _build_query(
         params.extend(years)
         idx += len(years)
 
-    order_sql = f"ORDER BY {sort_col} {sort_dir}, id ASC"
+    order_sql = f"ORDER BY meal_year DESC, {sort_col} {sort_dir}, id ASC"
     offset = (page - 1) * page_size
 
     # CTE 최적화: btree 조건이 있고 + 텍스트 조건도 있으면 CTE로 분리
@@ -166,7 +166,7 @@ async def search_meals(
             detail=f"정렬 불가 컬럼: {sort}. 허용: {sorted(SORTABLE)}",
         )
 
-    sort_dir = "ASC" if order == "asc" else ("DESC" if order == "desc" else "DESC")
+    sort_dir = "ASC" if order == "asc" else ("DESC" if order == "desc" else "ASC")
 
     log.info(
         "search_request",
