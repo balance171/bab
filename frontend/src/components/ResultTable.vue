@@ -304,6 +304,8 @@ function cellVal(v: string | null): string {
 /* Table */
 .table-wrap {
   overflow-x: auto;
+  overflow-y: auto;
+  max-height: 70vh;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -327,6 +329,9 @@ function cellVal(v: string | null): string {
   border-bottom: 1.5px solid var(--border);
   background: var(--surface-raised);
   user-select: none;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .th.sortable {

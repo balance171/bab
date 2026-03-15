@@ -100,6 +100,16 @@ function toggleYear(y: number) {
   }
 }
 
+function resetForm() {
+  school.value = ''
+  schoolCode.value = undefined
+  dish.value = ''
+  months.value = []
+  years.value = []
+  suggestions.value = []
+  showSuggestions.value = false
+}
+
 async function handleSubmit() {
   if (isDisabled.value) return
   const schoolText = school.value.trim()
@@ -245,6 +255,7 @@ defineExpose({ fill })
         </svg>
         검색
       </button>
+      <button type="button" class="btn-reset" @click="resetForm">초기화</button>
   </form>
 </template>
 
@@ -333,6 +344,30 @@ defineExpose({ fill })
   align-self: flex-end;
   min-width: 90px;
   flex: 0 0 auto;
+}
+
+.btn-reset {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-raised);
+  color: var(--text-muted);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 11px var(--sp-4);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all var(--transition);
+  align-self: flex-end;
+  flex: 0 0 auto;
+}
+
+.btn-reset:hover {
+  border-color: var(--error);
+  color: var(--error);
+  background: rgba(239, 68, 68, 0.06);
 }
 
 .btn-search:hover:not(:disabled) {
