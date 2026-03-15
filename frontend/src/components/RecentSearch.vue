@@ -81,4 +81,20 @@ function formatLabel(entry: RecentSearchEntry): string {
 .btn-clear:hover {
   color: var(--error);
 }
+
+@media (max-width: 640px) {
+  .recent-bar {
+    gap: 3px;
+  }
+
+  .recent-chip {
+    padding: 3px 8px;
+    font-size: 10px;
+  }
+
+  .btn-clear {
+    font-size: 10px;
+    padding: 2px 4px;
+  }
+}
 </style>

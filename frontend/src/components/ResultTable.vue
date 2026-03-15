@@ -303,15 +303,8 @@ function cellVal(v: string | null): string {
 
 /* Table */
 .table-wrap {
-  overflow: auto;
-  max-height: calc(100vh - 200px);
+  overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-}
-
-@media (max-width: 640px) {
-  .table-wrap {
-    max-height: calc(100vh - 140px);
-  }
 }
 
 .data-table {
@@ -335,7 +328,7 @@ function cellVal(v: string | null): string {
   background: var(--surface-raised);
   user-select: none;
   position: sticky;
-  top: 0;
+  top: var(--sticky-top-h, 0px);
   z-index: 10;
 }
 

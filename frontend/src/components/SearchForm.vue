@@ -380,33 +380,64 @@ defineExpose({ fill })
 /* ── 모바일 최적화 ── */
 @media (max-width: 640px) {
   .field-label {
-    font-size: 11px;
+    font-size: 10px;
+    margin-bottom: -2px;
+  }
+
+  .field {
+    gap: 2px;
+    flex: 1 1 120px;
   }
 
   .field-input {
-    padding: 8px var(--sp-3);
-    font-size: var(--text-xs);
+    padding: 6px var(--sp-2);
+    font-size: 11px;
   }
 
   .month-chip {
-    padding: 3px 0;
-    font-size: 10px;
+    padding: 2px 0;
+    font-size: 9px;
+    min-width: 24px;
+    border-radius: 3px;
+  }
+
+  .month-group {
+    gap: 2px;
+  }
+
+  .month-row {
+    gap: 2px;
   }
 
   .year-chip {
-    padding: 5px 0;
-    font-size: var(--text-xs);
+    padding: 4px 0;
+    font-size: 11px;
+    min-width: 44px;
+  }
+
+  .year-group {
+    gap: 3px;
   }
 
   .btn-search,
   .btn-reset {
-    padding: 8px var(--sp-3);
-    font-size: var(--text-xs);
-    min-width: 70px;
+    padding: 6px var(--sp-2);
+    font-size: 11px;
+    min-width: 56px;
   }
 
-  .school-preset {
+  .school-preset,
+  .school-text {
     font-size: 10px;
+    padding: 6px var(--sp-2);
+  }
+
+  .school-input-group {
+    gap: 2px;
+  }
+
+  .field-month {
+    flex: 0 0 auto;
   }
 }
 

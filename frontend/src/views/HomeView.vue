@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUpdated } from 'vue'
 import SearchForm from '@/components/SearchForm.vue'
 import ResultTable from '@/components/ResultTable.vue'
 import Pagination from '@/components/Pagination.vue'
@@ -72,13 +72,24 @@ function handleRecentSelect(entry: RecentSearchEntry) {
     years: entry.years?.length ? entry.years : undefined,
   })
 }
+
+const stickyRef = ref<HTMLElement | null>(null)
+
+function updateStickyHeight() {
+  if (stickyRef.value) {
+    const h = stickyRef.value.offsetHeight
+    document.documentElement.style.setProperty('--sticky-top-h', `${h}px`)
+  }
+}
+onMounted(updateStickyHeight)
+onUpdated(updateStickyHeight)
 </script>
 
 <template>
   <div class="app-layout">
     <main class="main">
       <!-- Sticky top: search + recent -->
-      <div class="sticky-top">
+      <div ref="stickyRef" class="sticky-top">
         <SearchForm ref="searchFormRef" @search="handleSearch" />
         <div class="sub-bar">
           <RecentSearch
