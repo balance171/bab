@@ -185,17 +185,16 @@ defineExpose({ fill })
       </div>
 
       <div class="field field-month">
-        <label class="field-label">월</label>
         <div class="month-group" role="group" aria-label="월 선택">
           <div class="month-row">
             <button v-for="m in MONTH_ROW1" :key="m" type="button"
               class="month-chip" :class="{ active: months.includes(m) }"
-              @click="toggleMonth(m)">{{ String(m).padStart(2, '0') }}</button>
+              @click="toggleMonth(m)">{{ m }}월</button>
           </div>
           <div class="month-row">
             <button v-for="m in MONTH_ROW2" :key="m" type="button"
               class="month-chip" :class="{ active: months.includes(m) }"
-              @click="toggleMonth(m)">{{ String(m).padStart(2, '0') }}</button>
+              @click="toggleMonth(m)">{{ m }}월</button>
           </div>
         </div>
       </div>
