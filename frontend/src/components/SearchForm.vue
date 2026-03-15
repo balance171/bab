@@ -53,10 +53,11 @@ function closeSuggestions() {
 
 // ── 즐겨찾기 학교 ─────────────────────────────────────────────
 const PRESET_SCHOOLS: SchoolItem[] = [
-  { school_name: '서울대학교사범대학부설고등학교', school_code: '7011109', region: '서울' },
   { school_name: '수원정보과학고등학교', school_code: '7530899', region: '경기' },
+  { school_name: '수원하이텍고등학교', school_code: '7530900', region: '경기' },
   { school_name: '광교고등학교', school_code: '7531040', region: '경기' },
   { school_name: '수지고등학교', school_code: '7530093', region: '경기' },
+  { school_name: '서울대학교사범대학부설고등학교', school_code: '7011109', region: '서울' },
 ]
 
 function onPresetChange(e: Event) {
@@ -365,7 +366,7 @@ defineExpose({ fill })
 
 .school-preset {
   flex: 0 0 auto;
-  width: 140px;
+  width: 170px;
   font-size: var(--text-xs);
   padding-right: 28px;
 }
