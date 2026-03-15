@@ -125,26 +125,27 @@ async def fetch_schools(
     region_code: str,
     job_id: str,
 ) -> list[dict]:
-    """schoolInfo API로 고등학교 목록 수집"""
+    """schoolInfo API로 초·중·고등학교 목록 수집"""
     schools: list[dict] = []
-    page = 1
-    while True:
-        rows = await _neis_get(
-            client,
-            "schoolInfo",
-            {
-                "ATPT_OFCDC_SC_CODE": region_code,
-                "SCHUL_KND_SC_NM": "고등학교",
-                "pIndex": page,
-            },
-            job_id,
-        )
-        if not rows:
-            break
-        schools.extend(rows)
-        if len(rows) < PAGE_SIZE:
-            break
-        page += 1
+    for school_type in ("초등학교", "중학교", "고등학교"):
+        page = 1
+        while True:
+            rows = await _neis_get(
+                client,
+                "schoolInfo",
+                {
+                    "ATPT_OFCDC_SC_CODE": region_code,
+                    "SCHUL_KND_SC_NM": school_type,
+                    "pIndex": page,
+                },
+                job_id,
+            )
+            if not rows:
+                break
+            schools.extend(rows)
+            if len(rows) < PAGE_SIZE:
+                break
+            page += 1
 
     logger.info(
         "schools_fetched",

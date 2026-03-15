@@ -370,10 +370,10 @@ function cellVal(v: string | null): string {
   padding: 11px var(--sp-4);
   color: var(--text);
   border-bottom: 1px solid var(--border);
-  vertical-align: middle;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  vertical-align: top;
+  white-space: normal;
+  word-break: keep-all;
+  line-height: 1.5;
 }
 
 .td-year {
