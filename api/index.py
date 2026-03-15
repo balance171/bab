@@ -108,8 +108,12 @@ def _handle_meals(handler, params):
     order_sql = f"ORDER BY meal_year DESC, {sort} {sort_dir}, id ASC"
     offset = (page - 1) * page_size
 
-    # CTE 최적화: fast params → slow params 순서로 결합
-    if fast_clauses and slow_clauses:
+    # school_code가 있으면 소량 데이터이므로 CTE 없이 직접 WHERE
+    # CTE는 month/year + text 대량 필터링에만 사용
+    has_school_code = any("school_code" in c for c in fast_clauses)
+    use_cte = fast_clauses and slow_clauses and not has_school_code
+
+    if use_cte:
         fast_where = "WHERE " + " AND ".join(fast_clauses)
         slow_where = "WHERE " + " AND ".join(slow_clauses)
         cte = f"WITH base AS MATERIALIZED (SELECT * FROM meals {fast_where})"

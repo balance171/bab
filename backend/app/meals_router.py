@@ -115,8 +115,10 @@ def _build_query(
     order_sql = f"ORDER BY meal_year DESC, {sort_col} {sort_dir}, id ASC"
     offset = (page - 1) * page_size
 
-    # CTE 최적화: btree 조건이 있고 + 텍스트 조건도 있으면 CTE로 분리
-    if fast_clauses and slow_clauses:
+    # CTE 최적화: month/year + text에만 사용 (school_code는 소량이라 불필요)
+    has_school_code = any("school_code" in c for c in fast_clauses)
+    use_cte = fast_clauses and slow_clauses and not has_school_code
+    if use_cte:
         fast_where = "WHERE " + " AND ".join(fast_clauses)
         slow_where = "WHERE " + " AND ".join(slow_clauses)
         cte = f"WITH base AS MATERIALIZED (SELECT * FROM meals {fast_where})"
