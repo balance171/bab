@@ -11,6 +11,9 @@ export async function fetchMeals(params: SearchParams): Promise<MealsResponse> {
   else if (params.school) url.searchParams.set('school', params.school)
   if (params.dish) url.searchParams.set('dish', params.dish)
   if (params.month) url.searchParams.set('month', String(params.month))
+  if (params.months?.length) {
+    for (const m of params.months) url.searchParams.append('months', String(m))
+  }
   if (params.years?.length) {
     for (const y of params.years) url.searchParams.append('years', String(y))
   }

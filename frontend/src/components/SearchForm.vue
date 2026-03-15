@@ -10,7 +10,7 @@ const emit = defineEmits<{
 const school = ref('')
 const schoolCode = ref<string | undefined>(undefined)
 const dish = ref('')
-const month = ref<number | undefined>(undefined)
+const months = ref<number[]>([])
 const years = ref<number[]>([])
 
 // ── 학교 자동완성 ─────────────────────────────────────────────
@@ -77,9 +77,19 @@ function onPresetChange(e: Event) {
 // ── 연도 ──────────────────────────────────────────────────────
 const YEAR_OPTIONS = [2023, 2024, 2025, 2026]
 
-const isDisabled = computed(() => !school.value.trim() && !dish.value.trim() && !month.value)
+const isDisabled = computed(() => !school.value.trim() && !dish.value.trim() && !months.value.length)
 
-const months = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2]
+const MONTH_ROW1 = [3, 4, 5, 6, 7]
+const MONTH_ROW2 = [8, 9, 10, 11, 12, 1, 2]
+
+function toggleMonth(m: number) {
+  const idx = months.value.indexOf(m)
+  if (idx >= 0) {
+    months.value = months.value.filter((v) => v !== m)
+  } else {
+    months.value = [...months.value, m]
+  }
+}
 
 function toggleYear(y: number) {
   const idx = years.value.indexOf(y)
@@ -99,17 +109,18 @@ function handleSubmit() {
     school: code ? schoolText : (schoolText || undefined),
     school_code: code,
     dish: dish.value.trim() || undefined,
-    month: month.value || undefined,
+    month: months.value.length === 1 ? months.value[0] : undefined,
+    months: months.value.length > 1 ? [...months.value] : undefined,
     years: years.value.length ? [...years.value] : undefined,
     page: 1,
   })
 }
 
-function fill(params: { school: string; dish: string; month?: number; years?: number[]; school_code?: string }) {
+function fill(params: { school: string; dish: string; month?: number; months?: number[]; years?: number[]; school_code?: string }) {
   school.value = params.school
   schoolCode.value = params.school_code
   dish.value = params.dish
-  month.value = params.month
+  months.value = params.months ? [...params.months] : (params.month ? [params.month] : [])
   years.value = params.years ? [...params.years] : []
 }
 
@@ -173,12 +184,20 @@ defineExpose({ fill })
         />
       </div>
 
-      <div class="field">
-        <label class="field-label" for="month-select">월</label>
-        <select id="month-select" v-model="month" class="field-input field-select">
-          <option :value="undefined">전체</option>
-          <option v-for="m in months" :key="m" :value="m">{{ m }}월</option>
-        </select>
+      <div class="field field-month">
+        <label class="field-label">월</label>
+        <div class="month-group" role="group" aria-label="월 선택">
+          <div class="month-row">
+            <button v-for="m in MONTH_ROW1" :key="m" type="button"
+              class="month-chip" :class="{ active: months.includes(m) }"
+              @click="toggleMonth(m)">{{ String(m).padStart(2, '0') }}</button>
+          </div>
+          <div class="month-row">
+            <button v-for="m in MONTH_ROW2" :key="m" type="button"
+              class="month-chip" :class="{ active: months.includes(m) }"
+              @click="toggleMonth(m)">{{ String(m).padStart(2, '0') }}</button>
+          </div>
+        </div>
       </div>
 
       <div class="field">
@@ -352,6 +371,52 @@ defineExpose({ fill })
 }
 
 .year-chip.active {
+  background: var(--primary-muted);
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* ── 월 칩 ── */
+.field-month {
+  min-width: 200px;
+}
+
+.month-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.month-row {
+  display: flex;
+  gap: 3px;
+}
+
+.month-chip {
+  padding: 4px 0;
+  min-width: 32px;
+  flex: 1;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: 11px;
+  font-family: var(--font);
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    background var(--transition),
+    border-color var(--transition),
+    color var(--transition);
+}
+
+.month-chip:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.month-chip.active {
   background: var(--primary-muted);
   border-color: var(--primary);
   color: var(--primary);

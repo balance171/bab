@@ -60,6 +60,7 @@ def _build_query(
     school_code: Optional[str],
     dish: Optional[str],
     month: Optional[int],
+    months: list[int],
     years: list[int],
     sort_col: str,
     sort_dir: str,
@@ -95,7 +96,12 @@ def _build_query(
         params.append(f"%{normalized}%")
         idx += 1
 
-    if month:
+    if months:
+        placeholders = ", ".join(f"${idx + i}" for i in range(len(months)))
+        fast_clauses.append(f"meal_month IN ({placeholders})")
+        params.extend(months)
+        idx += len(months)
+    elif month:
         fast_clauses.append(f"meal_month = ${idx}")
         params.append(month)
         idx += 1
@@ -139,7 +145,8 @@ async def search_meals(
     school: Optional[str] = Query(None, description="학교명 부분일치 (school_code 없을 때)"),
     school_code: Optional[str] = Query(None, description="학교코드 정확매칭 (자동완성 선택 시)"),
     dish: Optional[str] = Query(None, description="요리명 부분일치 (search_key 대상)"),
-    month: Optional[int] = Query(None, ge=1, le=12, description="월 (1~12)"),
+    month: Optional[int] = Query(None, ge=1, le=12, description="월 단일 (1~12)"),
+    months: list[int] = Query(default=[], description="월 복수선택 (예: ?months=3&months=4)"),
     years: list[int] = Query(default=[], description="연도 복수선택 (예: ?years=2023&years=2024)"),
     sort: str = Query("meal_date", description="정렬 컬럼"),
     order: Literal["asc", "desc", "default"] = Query("default", description="정렬 방향"),
@@ -151,7 +158,7 @@ async def search_meals(
     log = logger.bind(request_id=request_id)
 
     # 조건 검증: school/school_code/dish/month 중 하나 이상 필요
-    if not school and not school_code and not dish and month is None:
+    if not school and not school_code and not dish and month is None and not months:
         log.warning("search_empty_conditions", step="validate")
         raise HTTPException(
             status_code=400,
@@ -182,7 +189,7 @@ async def search_meals(
 
     try:
         count_sql, data_sql, params = _build_query(
-            school, school_code, dish, month, years, sort, sort_dir, page, page_size
+            school, school_code, dish, month, months, years, sort, sort_dir, page, page_size
         )
         pool = get_pool()
         async with pool.acquire() as conn:

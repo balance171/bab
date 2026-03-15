@@ -24,6 +24,7 @@ export interface SearchParams {
   school_code?: string   // 자동완성 선택 시 — 정확 매칭 (빠름)
   dish?: string
   month?: number
+  months?: number[]
   years?: number[]
   sort?: string
   order?: 'asc' | 'desc' | 'default'

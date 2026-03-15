@@ -59,6 +59,7 @@ def _handle_meals(handler, params):
     dish = params.get("dish", [None])[0]
     month_str = params.get("month", [None])[0]
     month = int(month_str) if month_str else None
+    months_list = [int(m) for m in params.get("months", [])]
     years = [int(y) for y in params.get("years", [])]
     sort = params.get("sort", ["meal_date"])[0]
     order = params.get("order", ["default"])[0]
@@ -67,7 +68,7 @@ def _handle_meals(handler, params):
     ps_str = params.get("page_size", [str(DEFAULT_PAGE_SIZE)])[0]
     page_size = min(MAX_PAGE_SIZE, max(1, int(ps_str)))
 
-    if not school and not school_code and not dish and month is None:
+    if not school and not school_code and not dish and month is None and not months_list:
         return _json_response(handler, {"detail": "학교명, 요리명, 월 중 하나 이상 입력해야 합니다."}, 400)
 
     if sort not in SORTABLE:
@@ -91,7 +92,11 @@ def _handle_meals(handler, params):
         slow_clauses.append("search_key LIKE %s")
         slow_params.append(f"%{normalized}%")
 
-    if month:
+    if months_list:
+        placeholders = ", ".join(["%s"] * len(months_list))
+        fast_clauses.append(f"meal_month IN ({placeholders})")
+        fast_params.extend(months_list)
+    elif month:
         fast_clauses.append("meal_month = %s")
         fast_params.append(month)
 
