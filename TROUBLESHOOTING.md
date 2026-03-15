@@ -236,3 +236,74 @@ printf "%s" "$DATABASE_URL" | vercel env add DATABASE_URL production --yes
   ]
 }
 ```
+
+---
+
+## 13. CTE MATERIALIZED + school_code 조합 타임아웃
+
+**에러**: `school_code + dish` 검색 시 `canceling statement due to statement timeout`
+
+**원인**: school_code가 fast_clauses에 포함되어 CTE MATERIALIZED 경로로 빠짐. school_code로 필터된 ~1000행에 CTE를 쓸 필요 없는데 오버헤드 발생
+
+**해결**: school_code가 있으면 CTE를 사용하지 않고 직접 WHERE 사용
+```python
+has_school_code = any("school_code" in c for c in fast_clauses)
+use_cte = fast_clauses and slow_clauses and not has_school_code
+```
+
+---
+
+## 14. Vercel 서버리스 함수 statement_timeout
+
+**에러**: Vercel에서 `canceling statement due to statement timeout` (Supabase 기본 2분)
+
+**원인**: Vercel 서버리스 함수의 psycopg2 연결에 statement_timeout 미설정
+
+**해결**: 연결 시 statement_timeout 명시 설정
+```python
+def _get_conn():
+    conn = psycopg2.connect(dsn)
+    conn.cursor().execute("SET statement_timeout = '25000'")
+    return conn
+```
+
+---
+
+## 15. 학교명 텍스트 입력 시 ILIKE 풀스캔 타임아웃
+
+**에러**: 자동완성 미사용 + 텍스트 입력 → `school_name ILIKE '%원일중%'` → 150만 행 풀스캔 → 타임아웃
+
+**해결**: `handleSubmit`에서 school_code 없으면 `/api/schools?q=X`로 자동 매칭 후 school_code 정확 검색 전환
+
+---
+
+## 16. Supabase MaxClientsInSessionMode 연결 풀 고갈
+
+**에러**: `MaxClientsInSessionMode: max clients reached`
+
+**원인**: 여러 프로세스가 Session pooler 연결 점유. kill해도 Supabase 측 5-10분 후 해제
+
+**해결**: 모든 프로세스 kill → 5분 대기 → 단일 프로세스만 실행. asyncpg 대신 psycopg2 사용
+
+---
+
+## 17. 인제스트 executemany 대량 INSERT 타임아웃
+
+**에러**: 500건+ `executemany` INSERT → Supabase statement_timeout(30초) 초과
+
+**원인**: Mumbai 리전 왕복 200-500ms × 500건 = 누적 타임아웃
+
+**해결**: 50건씩 배치 분할 INSERT
+```python
+BATCH_SIZE = 50
+for i in range(0, len(records), BATCH_SIZE):
+    cur.executemany(UPSERT_SQL, records[i:i+BATCH_SIZE])
+```
+
+---
+
+## 18. 인제스트 학교별 EXISTS 체크 병목
+
+**에러**: 학교마다 `SELECT COUNT(*) WHERE school_code = %s` → 건당 300ms × 390교 = 2분+
+
+**해결**: EXISTS 체크 제거. `ON CONFLICT DO NOTHING`이 중복 자동 처리하므로 불필요
