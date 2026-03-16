@@ -62,6 +62,7 @@ def _build_query(
     month: Optional[int],
     months: list[int],
     years: list[int],
+    school_types: list[str],
     sort_col: str,
     sort_dir: str,
     page: int,
@@ -112,6 +113,12 @@ def _build_query(
         params.extend(years)
         idx += len(years)
 
+    if school_types:
+        type_clauses = " OR ".join(f"school_name LIKE ${idx + i}" for i in range(len(school_types)))
+        slow_clauses.append(f"({type_clauses})")
+        params.extend([f"%{t}" for t in school_types])
+        idx += len(school_types)
+
     if sort_col == "meal_year":
         order_sql = f"ORDER BY meal_year {sort_dir}, meal_date ASC, id ASC"
     else:
@@ -153,6 +160,7 @@ async def search_meals(
     month: Optional[int] = Query(None, ge=1, le=12, description="월 단일 (1~12)"),
     months: list[int] = Query(default=[], description="월 복수선택 (예: ?months=3&months=4)"),
     years: list[int] = Query(default=[], description="연도 복수선택 (예: ?years=2023&years=2024)"),
+    school_types: list[str] = Query(default=[], description="학교유형 (초등학교/중학교/고등학교)"),
     sort: str = Query("meal_date", description="정렬 컬럼"),
     order: Literal["asc", "desc", "default"] = Query("default", description="정렬 방향"),
     page: int = Query(1, ge=1, description="페이지 번호"),
@@ -194,7 +202,7 @@ async def search_meals(
 
     try:
         count_sql, data_sql, params = _build_query(
-            school, school_code, dish, month, months, years, sort, sort_dir, page, page_size
+            school, school_code, dish, month, months, years, school_types, sort, sort_dir, page, page_size
         )
         pool = get_pool()
         async with pool.acquire() as conn:

@@ -63,6 +63,7 @@ def _handle_meals(handler, params):
     month = int(month_str) if month_str else None
     months_list = [int(m) for m in params.get("months", [])]
     years = [int(y) for y in params.get("years", [])]
+    school_types = params.get("school_types", [])
     sort = params.get("sort", ["meal_date"])[0]
     order = params.get("order", ["default"])[0]
     page_str = params.get("page", ["1"])[0]
@@ -106,6 +107,13 @@ def _handle_meals(handler, params):
         placeholders = ", ".join(["%s"] * len(years))
         fast_clauses.append(f"meal_year IN ({placeholders})")
         fast_params.extend(years)
+
+    if school_types:
+        placeholders = ", ".join(["%s"] * len(school_types))
+        # school_name LIKE '%초등학교%' 대신 school_name 끝 매칭
+        type_clauses = " OR ".join(["school_name LIKE %s" for _ in school_types])
+        slow_clauses.append(f"({type_clauses})")
+        slow_params.extend([f"%{t}" for t in school_types])
 
     if sort == "meal_year":
         order_sql = f"ORDER BY meal_year {sort_dir}, meal_date ASC, id ASC"

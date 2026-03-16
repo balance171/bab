@@ -12,6 +12,18 @@ const schoolCode = ref<string | undefined>(undefined)
 const dish = ref('')
 const months = ref<number[]>([])
 const years = ref<number[]>([])
+const schoolTypes = ref<string[]>([])
+
+const SCHOOL_TYPE_OPTIONS = ['초등학교', '중학교', '고등학교']
+
+function toggleSchoolType(t: string) {
+  const idx = schoolTypes.value.indexOf(t)
+  if (idx >= 0) {
+    schoolTypes.value = schoolTypes.value.filter((v) => v !== t)
+  } else {
+    schoolTypes.value = [...schoolTypes.value, t]
+  }
+}
 
 // ── 학교 자동완성 ─────────────────────────────────────────────
 const suggestions = ref<SchoolItem[]>([])
@@ -106,6 +118,7 @@ function resetForm() {
   dish.value = ''
   months.value = []
   years.value = []
+  schoolTypes.value = []
   suggestions.value = []
   showSuggestions.value = false
 }
@@ -134,16 +147,18 @@ async function handleSubmit() {
     month: months.value.length === 1 ? months.value[0] : undefined,
     months: months.value.length > 1 ? [...months.value] : undefined,
     years: years.value.length ? [...years.value] : undefined,
+    school_types: schoolTypes.value.length ? [...schoolTypes.value] : undefined,
     page: 1,
   })
 }
 
-function fill(params: { school: string; dish: string; month?: number; months?: number[]; years?: number[]; school_code?: string }) {
+function fill(params: { school: string; dish: string; month?: number; months?: number[]; years?: number[]; school_code?: string; school_types?: string[] }) {
   school.value = params.school
   schoolCode.value = params.school_code
   dish.value = params.dish
   months.value = params.months ? [...params.months] : (params.month ? [params.month] : [])
   years.value = params.years ? [...params.years] : []
+  schoolTypes.value = params.school_types ? [...params.school_types] : []
 }
 
 defineExpose({ fill })
@@ -218,6 +233,14 @@ defineExpose({ fill })
               class="month-chip" :class="{ active: months.includes(m) }"
               @click="toggleMonth(m)">{{ m }}월</button>
           </div>
+        </div>
+      </div>
+
+      <div class="field field-stype">
+        <div class="stype-group" role="group" aria-label="학교 유형">
+          <button v-for="t in SCHOOL_TYPE_OPTIONS" :key="t" type="button"
+            class="stype-chip" :class="{ active: schoolTypes.includes(t) }"
+            @click="toggleSchoolType(t)">{{ t.replace('학교','') }}</button>
         </div>
       </div>
 
@@ -427,6 +450,9 @@ defineExpose({ fill })
   .school-input-group { gap: 2px; }
   .school-preset { flex: 1 1 110px; }
   .school-text { flex: 1 1 80px; }
+
+  .stype-group { gap: 2px; }
+  .stype-chip { padding: 3px 6px; font-size: 10px; }
 }
 
 .btn-search:hover:not(:disabled) {
@@ -522,6 +548,40 @@ defineExpose({ fill })
 }
 
 .month-chip.active {
+  background: var(--primary-muted);
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* ── 학교 유형 칩 ── */
+.field-stype { flex: 0 0 auto; }
+
+.stype-group {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.stype-chip {
+  padding: 5px var(--sp-3);
+  background: var(--surface-raised);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  font-size: var(--text-xs);
+  font-family: var(--font);
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.stype-chip:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.stype-chip.active {
   background: var(--primary-muted);
   border-color: var(--primary);
   color: var(--primary);

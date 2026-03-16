@@ -20,6 +20,9 @@ export async function fetchMeals(params: SearchParams): Promise<MealsResponse> {
   if (params.sort) url.searchParams.set('sort', params.sort)
   if (params.order && params.order !== 'default') url.searchParams.set('order', params.order)
   if (params.page && params.page > 1) url.searchParams.set('page', String(params.page))
+  if (params.school_types?.length) {
+    for (const t of params.school_types) url.searchParams.append('school_types', t)
+  }
   if (params.page_size) url.searchParams.set('page_size', String(params.page_size))
 
   const res = await fetch(url.toString())

@@ -28,6 +28,7 @@ export interface SearchParams {
   years?: number[]
   sort?: string
   order?: 'asc' | 'desc' | 'default'
+  school_types?: string[]
   page?: number
   page_size?: number
 }
