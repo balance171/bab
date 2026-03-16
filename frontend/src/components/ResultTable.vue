@@ -31,19 +31,22 @@ const COLUMNS = [
   { key: 'search_key', label: '검색키' },
 ]
 
+const DATE_COLS = ['meal_date', 'meal_year']
+
 function toggleSort(col: string) {
   if (!SORTABLE.includes(col)) return
+  const isDate = DATE_COLS.includes(col)
 
   if (sortCol.value !== col) {
     sortCol.value = col
-    sortOrder.value = 'asc'
-  } else if (sortOrder.value === 'default' || sortOrder.value === undefined) {
+    sortOrder.value = isDate ? 'desc' : 'asc'  // 날짜: 최신순 먼저
+  } else if (sortOrder.value === 'desc') {
     sortOrder.value = 'asc'
   } else if (sortOrder.value === 'asc') {
     sortOrder.value = 'desc'
   } else {
-    sortCol.value = undefined
-    sortOrder.value = 'default'
+    sortCol.value = col
+    sortOrder.value = isDate ? 'desc' : 'asc'
   }
 
   emit('sortChange', sortCol.value, sortOrder.value)
@@ -403,7 +406,7 @@ function cellVal(v: string | null): string {
 }
 
 .data-row:hover {
-  background: var(--primary-muted);
+  background: rgba(123, 114, 247, 0.3);
 }
 
 .data-row:last-child .td {
