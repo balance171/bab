@@ -182,466 +182,180 @@ defineExpose({ fill })
 
 <template>
   <form class="form-bar" @submit.prevent="handleSubmit">
-      <div class="field" style="position: relative">
-        <label class="field-label" for="school-input">
-          학교명
-          <span v-if="schoolCode && school.trim()" class="code-badge">선택됨</span>
-        </label>
-        <div class="school-input-group">
-          <select
-            class="field-input field-select school-preset"
-            :value="schoolCode ?? ''"
-            @change="onPresetChange"
-          >
-            <option value="">직접 입력</option>
-            <option
-              v-for="ps in PRESET_SCHOOLS"
-              :key="ps.school_code"
-              :value="ps.school_code"
-            >{{ ps.school_name }}</option>
-          </select>
-          <input
-            id="school-input"
-            v-model="school"
-            type="text"
-            class="field-input school-text"
-            :class="{ 'input-selected': schoolCode }"
-            placeholder="또는 학교명 검색"
-            autocomplete="off"
-            @input="onSchoolInput"
-            @blur="closeSuggestions"
-          />
-        </div>
+    <!-- Row 1: 학교 + 요리 -->
+    <div class="row">
+      <div class="cell cell-school" style="position:relative">
+        <select class="inp inp-sel" :value="schoolCode ?? ''" @change="onPresetChange">
+          <option value="">학교 선택</option>
+          <option v-for="ps in PRESET_SCHOOLS" :key="ps.school_code" :value="ps.school_code">{{ ps.school_name }}</option>
+        </select>
+        <input v-model="school" type="text" class="inp" :class="{'inp-active':schoolCode}" placeholder="학교명 검색" autocomplete="off" @input="onSchoolInput" @blur="closeSuggestions" />
         <ul v-if="showSuggestions" class="suggestions" role="listbox">
-          <li
-            v-for="item in suggestions"
-            :key="item.school_code"
-            class="suggestion-item"
-            role="option"
-            @mousedown.prevent="selectSchool(item)"
-          >
+          <li v-for="item in suggestions" :key="item.school_code" class="suggestion-item" role="option" @mousedown.prevent="selectSchool(item)">
             <span class="suggestion-name">{{ item.school_name }}</span>
             <span class="suggestion-region">{{ item.region }}</span>
           </li>
         </ul>
       </div>
-
-      <div class="field">
-        <label class="field-label" for="dish-input">요리명</label>
-        <input
-          id="dish-input"
-          v-model="dish"
-          type="text"
-          class="field-input"
-          placeholder="예) 된장국"
-        />
+      <input v-model="dish" type="text" class="inp cell-dish" placeholder="요리명 검색" />
+    </div>
+    <!-- Row 2: 유형 + 월 + 연도 + 버튼 -->
+    <div class="row row-chips">
+      <div class="chip-group">
+        <button v-for="t in SCHOOL_TYPE_OPTIONS" :key="t" type="button" class="chip chip-sm" :class="{on:schoolTypes.includes(t)}" @click="toggleSchoolType(t)">{{ t }}</button>
       </div>
-
-      <div class="field field-month">
-        <div class="month-group" role="group" aria-label="월 선택">
-          <div class="month-row">
-            <button v-for="m in MONTH_ROW1" :key="m" type="button"
-              class="month-chip" :class="{ active: months.includes(m) }"
-              @click="toggleMonth(m)">{{ m }}월</button>
-          </div>
-          <div class="month-row">
-            <button v-for="m in MONTH_ROW2" :key="m" type="button"
-              class="month-chip" :class="{ active: months.includes(m) }"
-              @click="toggleMonth(m)">{{ m }}월</button>
-          </div>
-        </div>
+      <span class="sep">|</span>
+      <div class="chip-group">
+        <button v-for="m in MONTH_ROW1" :key="m" type="button" class="chip chip-xs" :class="{on:months.includes(m)}" @click="toggleMonth(m)">{{ m }}월</button>
+        <button v-for="m in MONTH_ROW2" :key="m" type="button" class="chip chip-xs" :class="{on:months.includes(m)}" @click="toggleMonth(m)">{{ m }}월</button>
       </div>
-
-      <div class="field field-stype">
-        <div class="stype-group" role="group" aria-label="학교 유형">
-          <button v-for="t in SCHOOL_TYPE_OPTIONS" :key="t" type="button"
-            class="stype-chip" :class="{ active: schoolTypes.includes(t) }"
-            @click="toggleSchoolType(t)">{{ t }}</button>
-        </div>
+      <span class="sep">|</span>
+      <div class="chip-group">
+        <button v-for="y in YEAR_OPTIONS" :key="y" type="button" class="chip" :class="{on:years.includes(y)}" @click="toggleYear(y)">{{ y }}</button>
       </div>
-
-      <div class="field">
-        <label class="field-label">연도</label>
-        <div class="year-group" role="group" aria-label="연도 선택">
-          <button
-            v-for="y in YEAR_OPTIONS"
-            :key="y"
-            type="button"
-            class="year-chip"
-            :class="{ active: years.includes(y) }"
-            :aria-pressed="years.includes(y)"
-            @click="toggleYear(y)"
-          >
-            {{ y }}
-          </button>
-        </div>
-      </div>
-
-      <button type="submit" class="btn-search" :disabled="isDisabled">
-        <svg
-          width="15"
-          height="15"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.35-4.35" />
-        </svg>
-        검색
-      </button>
+      <span class="sep">|</span>
+      <button type="submit" class="btn-search" :disabled="isDisabled">검색</button>
       <button type="button" class="btn-reset" @click="resetForm">초기화</button>
+    </div>
   </form>
 </template>
 
 <style scoped>
 .form-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-3);
-  align-items: flex-end;
   background: var(--surface);
-  border-radius: var(--r-xl);
+  border-radius: var(--r-lg);
   box-shadow: var(--shadow-md);
-  padding: var(--sp-4) var(--sp-5);
-}
-
-@media (max-width: 640px) {
-  .form-bar {
-    gap: 4px;
-    padding: 8px;
-  }
-}
-
-.field {
+  padding: 8px 12px;
   display: flex;
   flex-direction: column;
-  gap: var(--sp-2);
-  flex: 1 1 180px;
-  min-width: 0;
+  gap: 6px;
 }
 
-.field-label {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--text);
-  letter-spacing: -0.01em;
-}
-
-.field-input {
-  background: var(--surface-raised);
-  border: 1.5px solid transparent;
-  border-radius: var(--r-md);
-  padding: 10px var(--sp-4);
-  font-size: var(--text-sm);
-  font-family: var(--font);
-  color: var(--text);
-  transition:
-    border-color var(--transition),
-    box-shadow var(--transition),
-    background var(--transition);
-  outline: none;
-  width: 100%;
-}
-
-.field-input::placeholder {
-  color: var(--text-subtle);
-}
-
-.field-input:focus {
-  border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px var(--primary-muted);
-  background: var(--surface);
-}
-
-.field-select {
-  appearance: none;
-  cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ba3b5' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 36px;
-}
-
-.btn-search {
+/* ── 행 ── */
+.row {
   display: flex;
+  gap: 6px;
   align-items: center;
-  justify-content: center;
-  gap: var(--sp-2);
-  background: var(--primary);
-  color: var(--text-invert);
-  border: none;
-  border-radius: var(--r-md);
-  padding: 11px var(--sp-6);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  font-family: var(--font);
-  letter-spacing: -0.01em;
-  cursor: pointer;
-  transition:
-    background var(--transition),
-    transform var(--transition),
-    box-shadow var(--transition);
-  margin-top: 0;
-  align-self: flex-end;
-  min-width: 90px;
-  flex: 0 0 auto;
 }
 
-.btn-reset {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--surface-raised);
-  color: var(--text-muted);
-  border: 1.5px solid var(--border);
-  border-radius: var(--r-md);
-  padding: 11px var(--sp-4);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  font-family: var(--font);
-  cursor: pointer;
-  transition: all var(--transition);
-  align-self: flex-end;
-  flex: 0 0 auto;
-}
-
-.btn-reset:hover {
-  border-color: var(--error);
-  color: var(--error);
-  background: rgba(239, 68, 68, 0.06);
-}
-
-/* ── 모바일 최적화 ── */
-@media (max-width: 640px) {
-  .field-label {
-    font-size: 10px;
-    line-height: 1;
-  }
-
-  .field {
-    gap: 1px;
-    flex: 1 1 100px;
-  }
-
-  .field-input {
-    padding: 5px 6px;
-    font-size: 11px;
-  }
-
-  .month-chip {
-    padding: 2px 0;
-    font-size: 9px;
-    min-width: 20px;
-    border-radius: 3px;
-  }
-
-  .month-group { gap: 1px; }
-  .month-row { gap: 1px; }
-  .field-month { flex: 0 0 auto; }
-
-  .year-chip {
-    padding: 3px 0;
-    font-size: 10px;
-    min-width: 38px;
-  }
-
-  .year-group { gap: 2px; }
-
-  .btn-search, .btn-reset {
-    padding: 5px 8px;
-    font-size: 10px;
-    min-width: 48px;
-  }
-
-  .school-preset, .school-text {
-    font-size: 10px;
-    padding: 5px 6px;
-  }
-
-  .school-input-group { gap: 2px; }
-  .school-preset { flex: 1 1 110px; }
-  .school-text { flex: 1 1 80px; }
-
-  .stype-group { gap: 1px; }
-  .stype-chip { padding: 2px 6px; font-size: 9px; }
-}
-
-.btn-search:hover:not(:disabled) {
-  background: var(--primary-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(123, 114, 247, 0.4);
-}
-
-.btn-search:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.btn-search:disabled {
-  background: var(--border);
-  color: var(--text-subtle);
-  cursor: not-allowed;
-}
-
-.year-group {
-  display: flex;
-  gap: var(--sp-2);
+.row-chips {
   flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
 }
 
-.year-chip {
-  flex: 1;
-  min-width: 56px;
-  padding: 7px 0;
-  background: var(--surface-raised);
-  border: 1.5px solid var(--border);
-  border-radius: var(--r-md);
-  font-size: var(--text-sm);
-  font-family: var(--font);
-  font-weight: 500;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition:
-    background var(--transition),
-    border-color var(--transition),
-    color var(--transition);
-  letter-spacing: -0.01em;
-}
-
-.year-chip:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-}
-
-.year-chip.active {
-  background: var(--primary-muted);
-  border-color: var(--primary);
-  color: var(--primary);
-  font-weight: 600;
-}
-
-/* ── 월 칩 ── */
-.field-month {
-  flex: 0 0 auto;
-}
-
-.month-group {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.month-row {
-  display: flex;
-  gap: 3px;
-}
-
-.month-chip {
-  padding: 4px 0;
-  min-width: 32px;
-  flex: 1;
+/* ── 입력 ── */
+.inp {
   background: var(--surface-raised);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
-  font-size: 11px;
+  padding: 6px 10px;
+  font-size: 13px;
   font-family: var(--font);
-  font-weight: 500;
-  color: var(--text-muted);
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--transition);
+  min-width: 0;
+}
+
+.inp:focus { border-color: var(--primary); }
+.inp::placeholder { color: var(--text-subtle); }
+.inp-active { border-color: var(--primary); }
+
+.inp-sel {
+  appearance: none;
   cursor: pointer;
-  transition:
-    background var(--transition),
-    border-color var(--transition),
-    color var(--transition);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ba3b5' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  padding-right: 22px;
 }
 
-.month-chip:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-}
-
-.month-chip.active {
-  background: var(--primary-muted);
-  border-color: var(--primary);
-  color: var(--primary);
-  font-weight: 600;
-}
-
-/* ── 학교 유형 칩 ── */
-.field-stype { flex: 0 0 auto; }
-
-.stype-group {
+.cell-school {
   display: flex;
-  flex-direction: column;
-  gap: 3px;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
 }
 
-.stype-chip {
-  padding: 5px var(--sp-3);
+.cell-school .inp-sel { flex: 0 0 140px; font-size: 12px; }
+.cell-school .inp { flex: 1; min-width: 80px; }
+.cell-dish { flex: 0 0 160px; }
+
+/* ── 칩 공통 ── */
+.chip {
+  padding: 3px 10px;
   background: var(--surface-raised);
-  border: 1.5px solid var(--border);
-  border-radius: var(--r-md);
-  font-size: var(--text-xs);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: 12px;
   font-family: var(--font);
   font-weight: 500;
   color: var(--text-muted);
   cursor: pointer;
-  transition: all var(--transition);
   white-space: nowrap;
+  transition: all var(--transition);
 }
 
-.stype-chip:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-}
-
-.stype-chip.active {
+.chip:hover { border-color: var(--primary); color: var(--primary); }
+.chip.on {
   background: var(--primary-muted);
   border-color: var(--primary);
   color: var(--primary);
   font-weight: 600;
 }
 
-/* ── 학교 입력 그룹 ── */
-.school-input-group {
+.chip-sm { font-size: 11px; padding: 3px 8px; }
+.chip-xs { font-size: 11px; padding: 2px 6px; }
+
+.chip-group {
   display: flex;
+  gap: 3px;
+  align-items: center;
   flex-wrap: wrap;
-  gap: var(--sp-2);
 }
 
-.school-preset {
-  flex: 1 1 150px;
-  min-width: 0;
-  font-size: var(--text-xs);
-  padding-right: 28px;
+.sep {
+  color: var(--border);
+  font-size: 14px;
+  user-select: none;
+  margin: 0 2px;
 }
 
-.school-text {
-  flex: 1 1 120px;
-  min-width: 0;
-}
-
-/* ── 자동완성 ── */
-.code-badge {
-  display: inline-block;
-  background: var(--primary-muted);
-  color: var(--primary);
-  font-size: 10px;
+/* ── 버튼 ── */
+.btn-search {
+  padding: 5px 14px;
+  background: var(--primary);
+  color: var(--text-invert);
+  border: none;
+  border-radius: var(--r-sm);
+  font-size: 12px;
   font-weight: 600;
-  padding: 1px 6px;
-  border-radius: var(--r-full);
-  margin-left: var(--sp-2);
-  vertical-align: middle;
+  font-family: var(--font);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--transition);
 }
 
-.input-selected {
-  border-color: var(--primary) !important;
-  background: var(--surface) !important;
+.btn-search:hover:not(:disabled) { background: var(--primary-hover); }
+.btn-search:disabled { background: var(--border); color: var(--text-subtle); cursor: not-allowed; }
+
+.btn-reset {
+  padding: 5px 10px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  font-family: var(--font);
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition);
 }
 
+.btn-reset:hover { border-color: var(--error); color: var(--error); }
+
+/* ── 자동완성 드롭다운 ── */
 .suggestions {
   position: absolute;
   top: calc(100% + 4px);
@@ -683,5 +397,21 @@ defineExpose({ fill })
   font-size: var(--text-xs);
   color: var(--text-subtle);
   flex-shrink: 0;
+}
+
+/* ── 모바일 ── */
+@media (max-width: 640px) {
+  .form-bar { padding: 6px 8px; gap: 4px; }
+  .row { gap: 4px; flex-wrap: wrap; }
+  .row-chips { gap: 3px; }
+  .inp { padding: 5px 6px; font-size: 11px; }
+  .cell-school .inp-sel { flex: 0 0 110px; font-size: 10px; }
+  .cell-dish { flex: 1 1 100px; }
+  .chip { padding: 2px 6px; font-size: 10px; }
+  .chip-sm { font-size: 9px; padding: 2px 5px; }
+  .chip-xs { font-size: 9px; padding: 1px 4px; }
+  .sep { font-size: 10px; margin: 0 1px; }
+  .btn-search { padding: 4px 10px; font-size: 11px; }
+  .btn-reset { padding: 4px 8px; font-size: 10px; }
 }
 </style>
