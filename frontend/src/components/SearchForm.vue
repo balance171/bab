@@ -265,10 +265,10 @@ defineExpose({ fill })
   gap: 4px;
 }
 
-.cell-school .inp-sel { flex: 1; font-size: 11px; padding: 5px 20px 5px 6px; min-width: 80px; }
-.cell-school .inp { flex: 1; min-width: 80px; }
-.cell-school { flex: 1; }
-.inp-dish { flex: 0 0 100px; }
+.cell-school .inp-sel { flex: 1; font-size: 11px; padding: 5px 20px 5px 6px; }
+.cell-school .inp { flex: 1; }
+.cell-school { flex: 2; }
+.inp-dish { flex: 1; }
 
 /* ── 칩 공통 ── */
 .chip {
