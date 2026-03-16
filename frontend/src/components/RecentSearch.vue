@@ -16,20 +16,21 @@ function formatLabel(entry: RecentSearchEntry): string {
   if (entry.dish) parts.push(entry.dish)
   if (entry.month) parts.push(`${entry.month}월`)
   if (entry.years?.length) parts.push(entry.years.join('/') + '년')
-  return parts.join(' · ')
+  return parts.join(' · ') || '(빈 검색)'
 }
 </script>
 
 <template>
   <div v-if="entries.length" class="recent-bar">
-    <button
-      v-for="entry in entries"
-      :key="entry.timestamp"
-      class="recent-chip"
-      @click="emit('select', entry)"
-    >
-      {{ formatLabel(entry) }}
-    </button>
+    <template v-for="entry in entries" :key="entry.timestamp">
+      <button
+        v-if="entry.school || entry.dish || entry.month || entry.years?.length"
+        class="recent-chip"
+        @click="emit('select', entry)"
+      >
+        {{ formatLabel(entry) }}
+      </button>
+    </template>
     <button class="btn-clear" @click="emit('clear')">초기화</button>
   </div>
 </template>
