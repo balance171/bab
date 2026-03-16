@@ -182,14 +182,14 @@ defineExpose({ fill })
 
 <template>
   <form class="form-bar" @submit.prevent="handleSubmit">
-    <!-- Row 1: 학교 + 요리 -->
-    <div class="row">
+    <!-- 한 줄로 모든 조건 나열 -->
+    <div class="row row-chips">
       <div class="cell cell-school" style="position:relative">
         <select class="inp inp-sel" :value="schoolCode ?? ''" @change="onPresetChange">
-          <option value="">학교 선택</option>
+          <option value="">학교선택</option>
           <option v-for="ps in PRESET_SCHOOLS" :key="ps.school_code" :value="ps.school_code">{{ ps.school_name }}</option>
         </select>
-        <input v-model="school" type="text" class="inp" :class="{'inp-active':schoolCode}" placeholder="학교명 검색" autocomplete="off" @input="onSchoolInput" @blur="closeSuggestions" />
+        <input v-model="school" type="text" class="inp" :class="{'inp-active':schoolCode}" placeholder="학교검색" autocomplete="off" @input="onSchoolInput" @blur="closeSuggestions" />
         <ul v-if="showSuggestions" class="suggestions" role="listbox">
           <li v-for="item in suggestions" :key="item.school_code" class="suggestion-item" role="option" @mousedown.prevent="selectSchool(item)">
             <span class="suggestion-name">{{ item.school_name }}</span>
@@ -197,10 +197,8 @@ defineExpose({ fill })
           </li>
         </ul>
       </div>
-      <input v-model="dish" type="text" class="inp cell-dish" placeholder="요리명 검색" />
-    </div>
-    <!-- Row 2: 유형 + 월 + 연도 + 버튼 -->
-    <div class="row row-chips">
+      <input v-model="dish" type="text" class="inp inp-dish" placeholder="요리검색" />
+      <span class="sep">|</span>
       <div class="chip-group">
         <button v-for="t in SCHOOL_TYPE_OPTIONS" :key="t" type="button" class="chip chip-sm" :class="{on:schoolTypes.includes(t)}" @click="toggleSchoolType(t)">{{ t }}</button>
       </div>
@@ -225,20 +223,11 @@ defineExpose({ fill })
   background: var(--surface);
   border-radius: var(--r-lg);
   box-shadow: var(--shadow-md);
-  padding: 8px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-/* ── 행 ── */
-.row {
-  display: flex;
-  gap: 6px;
-  align-items: center;
+  padding: 6px 10px;
 }
 
 .row-chips {
+  display: flex;
   flex-wrap: wrap;
   gap: 4px;
   align-items: center;
@@ -278,9 +267,9 @@ defineExpose({ fill })
   min-width: 0;
 }
 
-.cell-school .inp-sel { flex: 0 0 120px; font-size: 12px; }
-.cell-school .inp { flex: 0 0 120px; }
-.cell-dish { flex: 1; min-width: 100px; }
+.cell-school .inp-sel { width: 90px; font-size: 11px; padding: 5px 20px 5px 6px; }
+.cell-school .inp { width: 100px; }
+.inp-dish { width: 90px; }
 
 /* ── 칩 공통 ── */
 .chip {
