@@ -278,9 +278,9 @@ defineExpose({ fill })
   min-width: 0;
 }
 
-.cell-school .inp-sel { flex: 0 0 140px; font-size: 12px; }
-.cell-school .inp { flex: 1; min-width: 80px; }
-.cell-dish { flex: 0 0 160px; }
+.cell-school .inp-sel { flex: 0 0 120px; font-size: 12px; }
+.cell-school .inp { flex: 0 0 120px; }
+.cell-dish { flex: 1; min-width: 100px; }
 
 /* ── 칩 공통 ── */
 .chip {
