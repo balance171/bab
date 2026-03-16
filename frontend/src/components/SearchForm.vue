@@ -223,7 +223,7 @@ defineExpose({ fill })
   background: var(--surface);
   border-radius: var(--r-lg);
   box-shadow: var(--shadow-md);
-  padding: 6px 10px;
+  padding: 6px 8px;
 }
 
 .row-chips {
@@ -263,16 +263,16 @@ defineExpose({ fill })
 .cell-school {
   display: flex;
   gap: 4px;
-  flex: 0 0 auto;
 }
 
-.cell-school .inp-sel { width: 100px; font-size: 11px; padding: 5px 20px 5px 6px; }
-.cell-school .inp { width: 100px; }
-.inp-dish { width: 100px; }
+.cell-school .inp-sel { flex: 1; font-size: 11px; padding: 5px 20px 5px 6px; min-width: 80px; }
+.cell-school .inp { flex: 1; min-width: 80px; }
+.cell-school { flex: 1; }
+.inp-dish { flex: 0 0 100px; }
 
 /* ── 칩 공통 ── */
 .chip {
-  padding: 3px 10px;
+  padding: 3px 12px;
   background: var(--surface-raised);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
