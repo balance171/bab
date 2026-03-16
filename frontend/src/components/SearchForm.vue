@@ -50,6 +50,7 @@ function selectSchool(item: SchoolItem) {
   schoolCode.value = item.school_code
   suggestions.value = []
   showSuggestions.value = false
+  autoSelectSchoolType(item.school_name)
 }
 
 function onSchoolInput() {
@@ -72,6 +73,20 @@ const PRESET_SCHOOLS: SchoolItem[] = [
   { school_name: '서울대학교사범대학부설고등학교', school_code: '7011109', region: '서울' },
 ]
 
+function detectSchoolType(name: string) {
+  if (name.includes('초등학교')) return '초등학교'
+  if (name.includes('중학교')) return '중학교'
+  if (name.includes('고등학교')) return '고등학교'
+  return null
+}
+
+function autoSelectSchoolType(name: string) {
+  const type = detectSchoolType(name)
+  if (type && !schoolTypes.value.includes(type)) {
+    schoolTypes.value = [type]
+  }
+}
+
 function onPresetChange(e: Event) {
   const code = (e.target as HTMLSelectElement).value
   if (!code) {
@@ -83,6 +98,7 @@ function onPresetChange(e: Event) {
   if (found) {
     school.value = found.school_name
     schoolCode.value = found.school_code
+    autoSelectSchoolType(found.school_name)
   }
 }
 
@@ -240,7 +256,7 @@ defineExpose({ fill })
         <div class="stype-group" role="group" aria-label="학교 유형">
           <button v-for="t in SCHOOL_TYPE_OPTIONS" :key="t" type="button"
             class="stype-chip" :class="{ active: schoolTypes.includes(t) }"
-            @click="toggleSchoolType(t)">{{ t.replace('학교','') }}</button>
+            @click="toggleSchoolType(t)">{{ t }}</button>
         </div>
       </div>
 
@@ -451,8 +467,8 @@ defineExpose({ fill })
   .school-preset { flex: 1 1 110px; }
   .school-text { flex: 1 1 80px; }
 
-  .stype-group { gap: 2px; }
-  .stype-chip { padding: 3px 6px; font-size: 10px; }
+  .stype-group { gap: 1px; }
+  .stype-chip { padding: 2px 6px; font-size: 9px; }
 }
 
 .btn-search:hover:not(:disabled) {
@@ -559,7 +575,8 @@ defineExpose({ fill })
 
 .stype-group {
   display: flex;
-  gap: var(--sp-2);
+  flex-direction: column;
+  gap: 3px;
 }
 
 .stype-chip {
