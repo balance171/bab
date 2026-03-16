@@ -131,7 +131,7 @@ function handleRecentSelect(entry: RecentSearchEntry) {
 /* ─── 상단 고정 ─── */
 .top-fixed {
   flex-shrink: 0;
-  padding: var(--sp-3) var(--sp-5) var(--sp-2);
+  padding: var(--sp-2) var(--sp-3) var(--sp-1);
 }
 
 .sub-bar {
@@ -180,7 +180,7 @@ function handleRecentSelect(entry: RecentSearchEntry) {
   min-height: 0;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 0 var(--sp-5) var(--sp-4);
+  padding: 0 var(--sp-3) var(--sp-3);
 }
 
 /* ─── 모바일 ─── */

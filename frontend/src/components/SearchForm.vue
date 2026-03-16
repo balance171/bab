@@ -263,13 +263,12 @@ defineExpose({ fill })
 .cell-school {
   display: flex;
   gap: 4px;
-  flex: 1;
-  min-width: 0;
+  flex: 0 0 auto;
 }
 
-.cell-school .inp-sel { width: 90px; font-size: 11px; padding: 5px 20px 5px 6px; }
+.cell-school .inp-sel { width: 100px; font-size: 11px; padding: 5px 20px 5px 6px; }
 .cell-school .inp { width: 100px; }
-.inp-dish { width: 90px; }
+.inp-dish { width: 100px; }
 
 /* ── 칩 공통 ── */
 .chip {
