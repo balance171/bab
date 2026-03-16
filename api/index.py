@@ -107,7 +107,10 @@ def _handle_meals(handler, params):
         fast_clauses.append(f"meal_year IN ({placeholders})")
         fast_params.extend(years)
 
-    order_sql = f"ORDER BY meal_year DESC, {sort} {sort_dir}, id ASC"
+    if sort == "meal_year":
+        order_sql = f"ORDER BY meal_year {sort_dir}, meal_date ASC, id ASC"
+    else:
+        order_sql = f"ORDER BY meal_year DESC, {sort} {sort_dir}, id ASC"
     offset = (page - 1) * page_size
 
     # school_code가 있으면 소량 데이터이므로 CTE 없이 직접 WHERE

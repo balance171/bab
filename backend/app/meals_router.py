@@ -112,7 +112,10 @@ def _build_query(
         params.extend(years)
         idx += len(years)
 
-    order_sql = f"ORDER BY meal_year DESC, {sort_col} {sort_dir}, id ASC"
+    if sort_col == "meal_year":
+        order_sql = f"ORDER BY meal_year {sort_dir}, meal_date ASC, id ASC"
+    else:
+        order_sql = f"ORDER BY meal_year DESC, {sort_col} {sort_dir}, id ASC"
     offset = (page - 1) * page_size
 
     # CTE 최적화: month/year + text에만 사용 (school_code는 소량이라 불필요)
