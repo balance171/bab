@@ -92,10 +92,22 @@ def _build_query(
         idx += 1
 
     if dish:
-        normalized = build_search_key(dish)
-        slow_clauses.append(f"search_key LIKE ${idx}")
-        params.append(f"%{normalized}%")
-        idx += 1
+        words = dish.strip().split()
+        if len(words) > 1:
+            or_parts = []
+            for w in words:
+                normalized = build_search_key(w)
+                if normalized:
+                    or_parts.append(f"search_key LIKE ${idx}")
+                    params.append(f"%{normalized}%")
+                    idx += 1
+            if or_parts:
+                slow_clauses.append(f"({' OR '.join(or_parts)})")
+        else:
+            normalized = build_search_key(dish)
+            slow_clauses.append(f"search_key LIKE ${idx}")
+            params.append(f"%{normalized}%")
+            idx += 1
 
     if months:
         placeholders = ", ".join(f"${idx + i}" for i in range(len(months)))

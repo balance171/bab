@@ -91,9 +91,20 @@ def _handle_meals(handler, params):
         slow_params.append(f"%{school}%")
 
     if dish:
-        normalized = _build_search_key(dish)
-        slow_clauses.append("search_key LIKE %s")
-        slow_params.append(f"%{normalized}%")
+        words = dish.strip().split()
+        if len(words) > 1:
+            or_parts = []
+            for w in words:
+                normalized = _build_search_key(w)
+                if normalized:
+                    or_parts.append("search_key LIKE %s")
+                    slow_params.append(f"%{normalized}%")
+            if or_parts:
+                slow_clauses.append(f"({' OR '.join(or_parts)})")
+        else:
+            normalized = _build_search_key(dish)
+            slow_clauses.append("search_key LIKE %s")
+            slow_params.append(f"%{normalized}%")
 
     if months_list:
         placeholders = ", ".join(["%s"] * len(months_list))
